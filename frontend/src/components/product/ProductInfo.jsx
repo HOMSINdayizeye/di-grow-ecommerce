@@ -10,14 +10,11 @@ import { WhatsAppIcon } from '@/components/common/WhatsAppButton';
 
 export default function ProductInfo({ product }) {
   const [qty, setQty] = useState(1);
-  const { addItem, openCart, isInCart } = useCart();
+  const { addItem, isInCart } = useCart();
   const inCart = isInCart(product._id);
   const discount = product.compareAtPrice ? Math.round((1 - product.price / product.compareAtPrice) * 100) : 0;
 
-  const add = () => {
-    addItem(product, qty);
-    openCart();
-  };
+  const add = () => addItem(product, qty);
 
   const share = async () => {
     const url = window.location.href;

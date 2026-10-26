@@ -57,18 +57,20 @@ function reducer(state, action) {
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, undefined, initial);
   const [isOpen, setIsOpen] = useState(false);
+  // Last product added, used by the mini cart to show a short "added" preview.
+  const [lastAdded, setLastAdded] = useState(null);
 
   useEffect(() => {
     setItem(STORAGE_KEY, state.items);
   }, [state.items]);
 
-  const addItem = useCallback((product, quantity = 1, { silent = false } = {}) => {
+  const addItem = useCallback((product, quantity = 1) => {
     if (!product?.inStock) {
       toast.error('This product is currently out of stock.');
       return;
     }
     dispatch({ type: 'ADD', product, quantity });
-    if (!silent) toast.success(`${product.name} added to cart`);
+    setLastAdded({ name: product.name, image: product.images?.[0] || '', quantity, at: Date.now() });
   }, []);
 
   const updateQuantity = useCallback((productId, quantity) => dispatch({ type: 'UPDATE', productId, quantity }), []);
@@ -97,8 +99,9 @@ export function CartProvider({ children }) {
       openCart,
       closeCart,
       toggleCart,
+      lastAdded,
     };
-  }, [state.items, isOpen, addItem, updateQuantity, removeItem, clearCart, openCart, closeCart, toggleCart]);
+  }, [state.items, isOpen, lastAdded, addItem, updateQuantity, removeItem, clearCart, openCart, closeCart, toggleCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

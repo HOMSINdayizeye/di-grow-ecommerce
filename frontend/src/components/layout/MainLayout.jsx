@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
-import CartDrawer from '@/components/cart/CartDrawer';
+import MiniCart from '@/components/cart/MiniCart';
 import WhatsAppButton from '@/components/common/WhatsAppButton';
 import Loader from '@/components/common/Loader';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
@@ -21,7 +21,7 @@ export default function MainLayout() {
         </ErrorBoundary>
       </main>
       <Footer />
-      <CartDrawer />
+      <MiniCart />
       <WhatsAppButton />
     </div>
   );

@@ -33,7 +33,7 @@ Path alias: `@` → `frontend/src`.
 | Money / dates | `utils/formatCurrency` (RWF), `utils/formatDate` (`formatDate`, `formatDateTime`, `timeAgo`) |
 | Data fetching | `hooks/useFetch(() => service.method(params), [deps])` → `{ data, meta, loading, error, refetch, setData }` |
 | Products | `hooks/useProducts` (`useProducts(params)`, `useProduct(slug)`, `useFeaturedProducts`, `useCategories`) |
-| Cart | `hooks/useCart` → `items, count, subtotal, hasPrescriptionItems, isEmpty, addItem(product, qty), updateQuantity, removeItem, clearCart, openCart` |
+| Cart | `hooks/useCart` → `items, count, subtotal, hasPrescriptionItems, isEmpty, addItem(product, qty), updateQuantity, removeItem, clearCart, openCart, lastAdded`. UI: `components/cart/MiniCart` (lower-left pill → item table) and `QuickOrderModal` (loading → email/phone → order number → WhatsApp hand-off) |
 | Orders | `hooks/useOrders` (`useAdminOrders`, `useAdminOrder(id)`, `useCreateOrder`, `useTrackOrder`) |
 | Settings | `hooks/useSettings` → `{ settings }` (phone, whatsapp, deliveryFee, freeDeliveryThreshold, deliveryNote, announcement…) |
 | Site constants | `constants/site` (`SITE`, `whatsappLink(msg)`, `NAV_LINKS`) |
