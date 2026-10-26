@@ -1,0 +1,15 @@
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/frontend.Dockerfile
+      args:
+        VITE_USE_MOCK: "true"
+        VITE_API_URL: /api
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+# When the backend exists, add it here as a service named "backend" listening
+# on port 5000 and switch VITE_USE_MOCK to "false". The nginx config already
+# proxies /api and /socket.io to http://backend:5000.

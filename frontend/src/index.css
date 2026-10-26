@@ -1,0 +1,280 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   Theme tokens
+   Values are RGB triplets so Tailwind can apply opacity modifiers.
+------------------------------------------------------------------- */
+:root {
+  --c-bg: 246 251 255; /* page background */
+  --c-surface: 255 255 255; /* cards */
+  --c-surface-2: 236 245 253; /* subtle panels */
+  --c-ink: 5 18 35; /* primary text */
+  --c-muted: 91 100 111; /* secondary text */
+  --c-line: 219 226 233; /* borders */
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(14, 42, 69, 0.08);
+  --grid-line: rgba(32, 135, 203, 0.08);
+  color-scheme: light;
+}
+
+:root.dark {
+  --c-bg: 10 14 23;
+  --c-surface: 26 31 46;
+  --c-surface-2: 15 20 25;
+  --c-ink: 240 240 240;
+  --c-muted: 184 188 200;
+  --c-line: 255 255 255;
+  --glass: rgba(15, 20, 25, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --grid-line: rgba(32, 135, 203, 0.12);
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-bg font-sans text-ink antialiased;
+    min-height: 100vh;
+  }
+  ::selection {
+    @apply bg-accent-500/40 text-white;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-bold tracking-tight;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+  img {
+    @apply max-w-full;
+  }
+  [hidden] {
+    display: none !important;
+  }
+  /* Thin scrollbars for drawers and tables */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply rounded-pill bg-muted/30;
+  }
+}
+
+@layer components {
+  /* Borders should be subtle in both themes */
+  .border-line {
+    border-color: rgb(var(--c-line) / 0.1);
+  }
+  :root:not(.dark) .border-line {
+    border-color: rgb(var(--c-line) / 1);
+  }
+
+  /* Glass panel used for nav, stat chips and floating cards */
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  /* Card surface */
+  .card {
+    @apply rounded-xl2 border bg-surface shadow-soft;
+    border-color: var(--glass-border);
+  }
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-card;
+  }
+
+  /* Gradient text (headline accent) */
+  .text-gradient {
+    @apply bg-gradient-brand bg-clip-text text-transparent;
+  }
+  .text-gradient-gold {
+    @apply bg-gradient-gold bg-clip-text text-transparent;
+  }
+
+  /* Section rhythm */
+  .section {
+    @apply py-16 md:py-24;
+  }
+  .section-title {
+    @apply font-display text-3xl font-bold leading-tight md:text-4xl lg:text-5xl;
+  }
+  .section-subtitle {
+    @apply mx-auto mt-4 max-w-2xl text-base text-muted md:text-lg;
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-pill border px-3 py-1 font-ui text-xs font-semibold uppercase tracking-wider text-brand-500;
+    border-color: rgba(32, 135, 203, 0.3);
+    background: rgba(32, 135, 203, 0.08);
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill font-ui text-sm font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-md {
+    @apply px-6 py-3;
+  }
+  .btn-sm {
+    @apply px-4 py-2 text-xs;
+  }
+  .btn-lg {
+    @apply px-8 py-4 text-base;
+  }
+  .btn-primary {
+    @apply bg-gradient-brand text-white shadow-glow hover:-translate-y-0.5 hover:shadow-glow-accent;
+  }
+  .btn-secondary {
+    @apply border text-ink hover:bg-surface-2;
+    border-color: var(--glass-border);
+    background: var(--glass);
+  }
+  .btn-ghost {
+    @apply text-ink hover:bg-surface-2;
+  }
+  .btn-danger {
+    @apply bg-danger text-white hover:bg-red-600;
+  }
+  .btn-whatsapp {
+    @apply bg-[#25d366] text-white hover:bg-[#1fb757];
+  }
+
+  /* Form controls */
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-ink;
+  }
+  .input {
+    @apply w-full rounded-xl border bg-surface px-4 py-3 text-sm text-ink placeholder:text-muted/70 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30;
+    border-color: var(--glass-border);
+  }
+  .input-error {
+    @apply border-danger focus:border-danger focus:ring-danger/30;
+  }
+  .help-text {
+    @apply mt-1 text-xs text-muted;
+  }
+  .error-text {
+    @apply mt-1 text-xs text-danger;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-pill px-2.5 py-1 text-xs font-semibold;
+  }
+
+  /* Decorative backgrounds */
+  .bg-grid {
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .glow-brand {
+    background: radial-gradient(circle, rgba(32, 135, 203, 0.35), transparent 70%);
+  }
+  .glow-accent {
+    background: radial-gradient(circle, rgba(233, 128, 57, 0.3), transparent 70%);
+  }
+  .divider-gradient {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2087cb, #e98039, transparent);
+  }
+
+  /* Skeleton */
+  .skeleton {
+    @apply animate-shimmer rounded-lg;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--c-surface-2)) 25%,
+      rgb(var(--c-surface)) 50%,
+      rgb(var(--c-surface-2)) 75%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* Prose for blog / legal pages */
+  .prose-dg {
+    @apply text-base leading-relaxed text-ink/90;
+  }
+  .prose-dg h2 {
+    @apply mb-3 mt-10 text-2xl;
+  }
+  .prose-dg h3 {
+    @apply mb-2 mt-8 text-xl;
+  }
+  .prose-dg p {
+    @apply mb-4 text-muted;
+  }
+  .prose-dg ul,
+  .prose-dg ol {
+    @apply mb-4 ml-6 list-disc space-y-1 text-muted;
+  }
+  .prose-dg ol {
+    @apply list-decimal;
+  }
+  .prose-dg a {
+    @apply text-brand-500 underline-offset-2 hover:underline;
+  }
+  .prose-dg strong {
+    @apply font-semibold text-ink;
+  }
+  .prose-dg blockquote {
+    @apply my-6 border-l-4 border-accent-500 pl-4 italic text-muted;
+  }
+}
+
+@layer utilities {
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s ease-out,
+      transform 0.7s ease-out;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
