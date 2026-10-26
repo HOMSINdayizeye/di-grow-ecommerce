@@ -17,9 +17,9 @@ export const ORDER_STATUS_META = {
   [ORDER_STATUS.NEW]: {
     label: 'New',
     description: 'We have received your request and will call you shortly.',
-    color: 'brand',
-    classes: 'bg-brand-500/15 text-brand-500 border-brand-500/30',
-    dot: 'bg-brand-500',
+    color: 'sky',
+    classes: 'bg-sky-500/15 text-sky-600 border-sky-500/30',
+    dot: 'bg-sky-500',
   },
   [ORDER_STATUS.CONTACTED]: {
     label: 'Contacted',

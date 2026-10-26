@@ -4,7 +4,7 @@
   "description": "Health, wellness and growth products delivered in Kigali.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0e17",
-  "theme_color": "#0a0e17",
+  "background_color": "#ffffff",
+  "theme_color": "#16a35a",
   "icons": [{ "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml" }]
 }

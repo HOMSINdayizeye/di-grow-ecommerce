@@ -17,18 +17,18 @@ export default {
         ink: 'rgb(var(--c-ink) / <alpha-value>)',
         muted: 'rgb(var(--c-muted) / <alpha-value>)',
         line: 'rgb(var(--c-line) / <alpha-value>)',
-        // Brand palette
+        // Brand palette: pharmacy green
         brand: {
-          50: '#e9f6ff',
-          100: '#cfeaff',
-          200: '#a3d5fb',
-          300: '#6fbbf3',
-          400: '#3f9fe3',
-          500: '#2087cb',
-          600: '#176da8',
-          700: '#125587',
-          800: '#0e3f66',
-          900: '#0a2c48',
+          50: '#ecfdf3',
+          100: '#d1fae1',
+          200: '#a7f3c8',
+          300: '#6ee7a6',
+          400: '#34d17f',
+          500: '#16a35a',
+          600: '#0f8a4b',
+          700: '#0e6e3e',
+          800: '#0b5733',
+          900: '#07472b',
         },
         accent: {
           50: '#fff4ea',
@@ -43,11 +43,12 @@ export default {
           900: '#5a2810',
         },
         gold: { 400: '#ffd24b', 500: '#fba100' },
+        // Deep green-black used for overlays and the dark theme
         navy: {
-          700: '#1a1f2e',
-          800: '#0f1419',
-          900: '#0a0e17',
-          950: '#070a10',
+          700: '#10231b',
+          800: '#0b1a14',
+          900: '#07140f',
+          950: '#040c09',
         },
         success: '#22c55e',
         warning: '#f59e0b',
@@ -67,15 +68,15 @@ export default {
         soft: '0 5px 20px rgba(0,0,0,0.08)',
         card: '0 10px 30px rgba(0,0,0,0.10)',
         float: '0 20px 40px rgba(0,0,0,0.15)',
-        glow: '0 10px 30px rgba(32,135,203,0.35)',
+        glow: '0 10px 30px rgba(22,163,90,0.35)',
         'glow-accent': '0 10px 30px rgba(233,128,57,0.35)',
       },
       backgroundImage: {
-        'gradient-brand': 'linear-gradient(135deg, #2087cb 0%, #e98039 100%)',
+        'gradient-brand': 'linear-gradient(135deg, #0f8a4b 0%, #34d17f 100%)',
         'gradient-gold': 'linear-gradient(135deg, #ffd24b, #fba100)',
         'gradient-soft':
-          'linear-gradient(135deg, rgba(32,135,203,0.14) 0%, rgba(233,128,57,0.12) 100%)',
-        'gradient-hero': 'linear-gradient(135deg, #0a0e17 0%, #1a1f2e 100%)',
+          'linear-gradient(135deg, rgba(22,163,90,0.14) 0%, rgba(52,209,127,0.10) 100%)',
+        'gradient-hero': 'linear-gradient(135deg, #07472b 0%, #0e6e3e 60%, #0f8a4b 100%)',
       },
       keyframes: {
         float: {

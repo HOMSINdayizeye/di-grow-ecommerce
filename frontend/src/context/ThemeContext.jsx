@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 const ThemeContext = createContext(null);
-const KEY = 'dg-theme';
+const KEY = 'dg-theme-v2';
 
+/** Light (white + pharmacy green) is the default; dark is opt-in. */
 function readInitial() {
   try {
     const saved = localStorage.getItem(KEY);
@@ -10,7 +11,7 @@ function readInitial() {
   } catch {
     /* ignore */
   }
-  return 'dark';
+  return 'light';
 }
 
 export function ThemeProvider({ children }) {
@@ -18,7 +19,7 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0a0e17' : '#f6fbff');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#07140f' : '#ffffff');
     try {
       localStorage.setItem(KEY, theme);
     } catch {

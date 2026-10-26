@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0a0e17" />
+    <meta name="theme-color" content="#ffffff" />
     <title>Di-Grow | Health, Wellness and Growth Products in Kigali</title>
     <meta
       name="description"
@@ -21,8 +21,8 @@
       // Apply the saved theme before first paint to avoid a flash.
       (function () {
         try {
-          var t = localStorage.getItem('dg-theme');
-          var dark = t ? t === 'dark' : true;
+          var t = localStorage.getItem('dg-theme-v2');
+          var dark = t === 'dark';
           document.documentElement.classList.toggle('dark', dark);
         } catch (e) {}
       })();

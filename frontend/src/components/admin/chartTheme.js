@@ -1,6 +1,6 @@
 /** Shared recharts styling so every admin chart reads as one system. */
 export const CHART_COLORS = {
-  brand: '#2087cb',
+  brand: '#16a35a',
   accent: '#e98039',
   gold: '#fba100',
   success: '#22c55e',
@@ -8,7 +8,7 @@ export const CHART_COLORS = {
 };
 
 export const STATUS_COLORS = {
-  new: '#2087cb',
+  new: '#0ea5e9',
   contacted: '#fba100',
   confirmed: '#e98039',
   delivered: '#22c55e',

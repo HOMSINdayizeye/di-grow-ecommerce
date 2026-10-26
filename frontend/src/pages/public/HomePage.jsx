@@ -11,6 +11,7 @@ import {
   Quote,
   BadgeCheck,
   Clock,
+  Cross,
 } from 'lucide-react';
 import SEOHead from '@/seo/SEOHead';
 import SectionHeading from '@/components/common/SectionHeading';
@@ -77,7 +78,7 @@ export default function HomePage() {
         <div className="container relative grid items-center gap-10 py-14 md:py-20 lg:grid-cols-12 lg:py-28">
           <div className="text-center lg:col-span-7 lg:text-left">
             <span className="eyebrow mb-6 animate-fade-up">
-              <BadgeCheck className="h-3.5 w-3.5" /> Trusted by families and farmers in Kigali
+              <Cross className="h-3.5 w-3.5 fill-current" /> Licensed pharmacy · Trusted by families and farmers in Kigali
             </span>
             <h1 className="font-display text-4xl font-extrabold leading-[1.05] text-balance animate-fade-up sm:text-5xl lg:text-6xl xl:text-7xl" style={{ animationDelay: '80ms' }}>
               Everything You Need to <span className="text-gradient">Stay Healthy</span> and Grow Strong
@@ -107,7 +108,7 @@ export default function HomePage() {
               <div className="absolute bottom-5 left-5 right-5 text-white">
                 <p className="text-xs uppercase tracking-wider text-white/70">Featured this week</p>
                 <p className="font-display text-xl font-bold">Organic Foliar Fertilizer 1L</p>
-                <Link to="/product/organic-foliar-fertilizer-1l" className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-accent-300">
+                <Link to="/product/organic-foliar-fertilizer-1l" className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-brand-200">
                   View product <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -119,12 +120,12 @@ export default function HomePage() {
       </section>
 
       {/* Trust strip */}
-      <section className="border-y border-line bg-surface-2/60">
-        <div className="container overflow-hidden py-4">
-          <div className="flex w-max animate-marquee items-center gap-10 whitespace-nowrap text-sm font-medium text-muted">
+      <section className="bg-gradient-brand text-white">
+        <div className="container overflow-hidden py-3.5">
+          <div className="flex w-max animate-marquee items-center gap-10 whitespace-nowrap text-sm font-semibold">
             {[...TRUST, ...TRUST].map((t, i) => (
               <span key={i} className="inline-flex items-center gap-2">
-                <BadgeCheck className="h-4 w-4 text-brand-500" /> {t}
+                <BadgeCheck className="h-4 w-4 text-white/90" /> {t}
               </span>
             ))}
           </div>

@@ -5,9 +5,10 @@ Path alias: `@` → `frontend/src`.
 
 ## Design language
 
-- Dark navy theme by default (`html.dark`), with a light theme toggle. Never hardcode page backgrounds; use the semantic tokens.
-- Semantic Tailwind colours: `bg-bg`, `bg-surface`, `bg-surface-2`, `text-ink`, `text-muted`, `border-line`.
-- Brand colours: `brand-*` (blue, 500 = #2087cb), `accent-*` (orange, 500 = #e98039), `gold-400/500`, `navy-700/800/900/950`, plus `success`, `warning`, `danger`.
+- Pharmacy identity: white surfaces with green accents. Light theme is the default; a dark (deep green) theme is available via the toggle (`html.dark`). Never hardcode page backgrounds; use the semantic tokens.
+- Semantic Tailwind colours: `bg-bg`, `bg-surface`, `bg-surface-2` (mint tint), `text-ink`, `text-muted`, `border-line`.
+- Brand colours: `brand-*` (pharmacy green, 500 = #16a35a), `accent-*` (orange, 500 = #e98039, used sparingly for Rx badges and farm products), `gold-400/500`, `navy-700/800/900/950` (deep green-black for overlays), plus `success`, `warning`, `danger`.
+- Deep green bands (`bg-gradient-hero`) carry white text; inside them `text-gradient` automatically switches to a white-to-mint gradient.
 - Fonts: `font-display` (serif, headings), `font-sans` (body), `font-ui` (buttons/labels).
 - Headline accent: wrap one or two words in `<span className="text-gradient">`.
 - Pill buttons: `btn btn-primary|btn-secondary|btn-ghost|btn-danger|btn-whatsapp` + `btn-sm|btn-md|btn-lg`. Or use `components/common/Button` (`variant`, `size`, `to`, `href`, `loading`, `icon`).
