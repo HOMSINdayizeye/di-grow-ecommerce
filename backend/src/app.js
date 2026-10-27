@@ -18,9 +18,12 @@ export function createApp() {
   app.use(
     cors({
       origin(origin, cb) {
-        // Same-origin requests (nginx / Vite proxy) have no Origin header.
+        // Requests without an Origin header (curl, server to server) are fine.
         if (!origin || env.corsOrigins.includes(origin)) return cb(null, true);
-        return cb(new Error(`Origin ${origin} is not allowed`));
+        // In development accept any localhost port, since Vite picks a free one (5173, 5174, ...).
+        if (!env.isProd && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return cb(null, true);
+        // Unknown origin: answer without CORS headers so the browser blocks it, instead of a 500.
+        return cb(null, false);
       },
       credentials: true,
     })

@@ -84,8 +84,8 @@ export default function ImageUploader({ value = [], onChange, max = 6, className
   const addUrl = () => {
     const v = url.trim();
     if (!v) return;
-    if (!/^(https?:\/\/|data:image\/)/i.test(v)) {
-      toast.error('Enter a valid image URL (starting with http:// or https://)');
+    if (!/^(https?:\/\/|data:image\/|\/)/i.test(v)) {
+      toast.error('Enter an image URL (https://...) or a site path (/images/...)');
       return;
     }
     if (full) {
@@ -184,7 +184,8 @@ export default function ImageUploader({ value = [], onChange, max = 6, className
         <div className="relative flex-1">
           <Link2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
-            type="url"
+            type="text"
+            inputMode="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyDown={(e) => {
@@ -193,7 +194,7 @@ export default function ImageUploader({ value = [], onChange, max = 6, className
                 addUrl();
               }
             }}
-            placeholder="Or paste an image URL"
+            placeholder="Optional: paste an image URL or path"
             className="input py-2.5 pl-9 text-sm"
             disabled={full}
           />

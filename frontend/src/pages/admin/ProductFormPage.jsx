@@ -190,7 +190,7 @@ export default function ProductFormPage() {
 
           <div className="card p-5">
             <h3 className="font-ui text-sm font-semibold">Images</h3>
-            <p className="mb-3 text-xs text-muted">The first image is the cover. Up to 6.</p>
+            <p className="mb-3 text-xs text-muted">Optional. The first image is the cover, up to 6. Without images a placeholder is shown.</p>
             <Controller name="images" control={control} render={({ field }) => <ImageUploader value={field.value || []} onChange={field.onChange} max={6} />} />
             {errors.images && <p className="error-text">{errors.images.message}</p>}
           </div>
