@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-import { Menu, Search, ShoppingBag, X, PackageSearch, Phone } from 'lucide-react';
+import { Menu, Search, ShoppingBag, X, PackageSearch, Phone, LogIn } from 'lucide-react';
 import Logo from '@/components/common/Logo';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import { useCart } from '@/hooks/useCart';
@@ -85,6 +85,9 @@ export default function Header() {
                 <PackageSearch className="h-5 w-5" />
               </Link>
               <ThemeToggle className="hidden sm:inline-flex" />
+              <Link to="/admin/login" className="rounded-full p-2.5 text-ink/80 transition hover:bg-surface-2 md:hidden" aria-label="Login" title="Login">
+                <LogIn className="h-5 w-5" />
+              </Link>
               <button type="button" onClick={openCart} className="relative rounded-full p-2.5 text-ink/80 transition hover:bg-surface-2" aria-label={`Open cart, ${count} items`}>
                 <ShoppingBag className="h-5 w-5" />
                 {count > 0 && (
@@ -93,6 +96,9 @@ export default function Header() {
                   </span>
                 )}
               </button>
+              <Link to="/admin/login" className="btn btn-secondary btn-sm hidden md:inline-flex">
+                <LogIn className="h-4 w-4" /> Login
+              </Link>
               <Link to="/shop" className="btn btn-primary btn-sm hidden md:inline-flex">
                 Shop Now
               </Link>
@@ -145,6 +151,9 @@ export default function Header() {
             </NavLink>
             <NavLink to="/faq" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 font-ui text-base font-medium text-ink hover:bg-surface-2">
               FAQ
+            </NavLink>
+            <NavLink to="/admin/login" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 rounded-xl px-4 py-3 font-ui text-base font-medium text-ink hover:bg-surface-2">
+              <LogIn className="h-4 w-4" /> Staff login
             </NavLink>
           </nav>
           <div className="space-y-3 border-t border-line p-4">

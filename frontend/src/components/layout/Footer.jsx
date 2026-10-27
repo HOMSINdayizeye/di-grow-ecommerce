@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mail, MapPin, Phone, Clock, Facebook, Instagram, Twitter, ArrowRight } from 'lucide-react';
+import { Mail, MapPin, Phone, Clock, Facebook, Instagram, Twitter, ArrowRight, LogIn } from 'lucide-react';
 import Logo from '@/components/common/Logo';
 import { FOOTER_LINKS, SITE, whatsappLink } from '@/constants/site';
 import { useSettings } from '@/hooks/useSettings';
@@ -94,6 +94,9 @@ export default function Footer() {
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 text-xs text-muted md:flex-row">
           <p>© {year} {settings.storeName}. All rights reserved.</p>
           <p>Prescription medicines are dispensed only after verification by a licensed pharmacist.</p>
+          <Link to="/admin/login" className="inline-flex items-center gap-1.5 font-ui font-medium text-ink/80 transition hover:text-brand-500">
+            <LogIn className="h-3.5 w-3.5" /> Staff login
+          </Link>
         </div>
       </div>
     </footer>
