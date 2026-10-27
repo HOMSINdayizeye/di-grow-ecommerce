@@ -4,13 +4,18 @@
   "private": true,
   "description": "Di-Grow e-commerce platform: public storefront with order requests and an admin dashboard.",
   "workspaces": [
-    "frontend"
+    "frontend",
+    "backend"
   ],
   "scripts": {
     "dev": "npm run dev --workspace=frontend",
     "build": "npm run build --workspace=frontend",
     "lint": "npm run lint --workspace=frontend",
-    "preview": "npm run preview --workspace=frontend"
+    "preview": "npm run preview --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "start:backend": "npm run start --workspace=backend",
+    "seed": "npm run seed --workspace=backend",
+    "seed:demo": "npm run seed:demo --workspace=backend"
   },
   "engines": {
     "node": ">=20"

@@ -189,8 +189,8 @@ export default function SettingsPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField label="Store name" required error={errors.storeName?.message} {...register('storeName')} />
                 <FormField label="Tagline" error={errors.tagline?.message} {...register('tagline')} />
-                <FormField label="Phone" required placeholder="+250 788 000 000" error={errors.phone?.message} {...register('phone')} />
-                <FormField label="WhatsApp number" required placeholder="250788000000" help="Digits only, with country code" error={errors.whatsapp?.message} {...register('whatsapp')} />
+                <FormField label="Phone" required placeholder="+250 790 911 427" error={errors.phone?.message} {...register('phone')} />
+                <FormField label="WhatsApp number" required placeholder="250790911427" help="Digits only, with country code" error={errors.whatsapp?.message} {...register('whatsapp')} />
                 <FormField label="Email" required type="email" error={errors.email?.message} {...register('email')} />
                 <FormField label="Opening hours" placeholder="Mon - Sat, 8:00 AM - 7:00 PM" error={errors.openingHours?.message} {...register('openingHours')} />
                 <FormField className="sm:col-span-2" label="Address" placeholder="KN 4 Ave, Nyarugenge, Kigali" error={errors.address?.message} {...register('address')} />
@@ -221,7 +221,7 @@ export default function SettingsPage() {
               <FormField label="Email recipients" placeholder="orders@digrow.rw, manager@digrow.rw" help="Comma separated" error={errors.notifyEmailRecipients?.message} {...register('notifyEmailRecipients')} />
               <div className="divider-gradient opacity-40" />
               {switchField('notifySms', 'SMS alerts', 'Send an SMS for every new order')}
-              <FormField label="SMS recipients" placeholder="+250788000000, +250788000001" help="Comma separated, with country code" error={errors.notifySmsRecipients?.message} {...register('notifySmsRecipients')} />
+              <FormField label="SMS recipients" placeholder="+250790911427, +250790911427" help="Comma separated, with country code" error={errors.notifySmsRecipients?.message} {...register('notifySmsRecipients')} />
             </Section>
           </div>
 

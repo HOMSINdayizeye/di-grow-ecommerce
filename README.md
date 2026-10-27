@@ -8,42 +8,55 @@ Customers browse products, add them to a cart and send an **order request** with
 
 ```
 di-grow-ecommerce/
-├── frontend/        React 18 + Vite + Tailwind storefront and admin (this phase)
+├── frontend/        React 18 + Vite + Tailwind storefront and admin
+├── backend/         Node 22 + Express + MongoDB + Socket.io API (see backend/README.md)
 ├── docs/            Design system and data contract
-├── infrastructure/  Frontend Dockerfile, nginx config, docker-compose
+├── infrastructure/  Dockerfiles, nginx config, docker-compose (mongo + backend + frontend)
 └── .github/         CI workflow (lint + build)
 ```
 
-The `backend/` workspace (Node/Express API, Socket.io, jobs) is added in the next phase; the nginx config and the frontend services already expect it at `http://backend:5000`.
+## Quick start
 
-## Quick start (frontend)
-
-Requires Node 20+.
+Requires Node 20+ and MongoDB running locally (`mongodb://127.0.0.1:27017`).
 
 ```bash
 npm install
-npm run dev
+cp backend/.env.example backend/.env    # set JWT_SECRET and ADMIN_PASSWORD
+npm run seed:demo                       # catalog, settings, admin user, demo orders
+npm run dev:backend                     # API on http://localhost:5000
+npm run dev                             # storefront on http://localhost:5173 (second terminal)
 ```
 
-Open http://localhost:5173 (the Claude desktop app can also start it from `.claude/launch.json`). The frontend ships with an in-memory **mock API** (`VITE_USE_MOCK=true` in `frontend/.env`) so every page works before the backend exists. Mock changes persist in `localStorage`.
+The Claude desktop app can start both from `.claude/launch.json`.
 
-Admin dashboard: http://localhost:5173/admin/login
+Admin dashboard: http://localhost:5173/admin/login. Sign in with the `ADMIN_EMAIL` / `ADMIN_PASSWORD` from `backend/.env` (default `admin@digrow.rw` / `admin123`), then add more users under **Admin → Staff**.
 
-| Field | Value |
-| --- | --- |
-| Email | `admin@digrow.rw` |
-| Password | `admin123` |
+### Mock mode
 
-To point at a real backend, set `VITE_USE_MOCK=false` and `VITE_API_URL` in `frontend/.env`.
+Set `VITE_USE_MOCK=true` in `frontend/.env` to run the frontend against its in-memory mock API without MongoDB or the backend. Mock changes persist in `localStorage`. The mock and the real API share the same data contract and demo content.
 
 ## Scripts
 
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Start the Vite dev server (proxies `/api` and `/socket.io` to `localhost:5000`) |
+| `npm run dev:backend` | Start the API with file watching |
+| `npm run start:backend` | Start the API for production |
+| `npm run seed` / `npm run seed:demo` | Seed the database (demo adds sample orders) |
 | `npm run build` | Production build to `frontend/dist` |
 | `npm run preview` | Serve the production build locally |
 | `npm run lint` | ESLint over the frontend |
+
+## Docker
+
+```bash
+cp infrastructure/.env.example infrastructure/.env   # set JWT_SECRET and ADMIN_PASSWORD
+cd infrastructure
+docker compose up -d --build
+docker compose exec backend node src/seed/seed.js
+```
+
+Open http://localhost. nginx serves the frontend and proxies `/api`, `/socket.io` and `/sitemap.xml` to the backend container.
 
 ## Frontend features
 
@@ -75,7 +88,9 @@ Copy `frontend/.env.example` to `frontend/.env`:
 | `VITE_SOCKET_URL` | Socket.io server for admin notifications |
 | `VITE_USE_MOCK` | `true` to use the built-in mock API |
 | `VITE_SITE_URL` | Public URL for canonical links |
-| `VITE_WHATSAPP_NUMBER`, `VITE_PHONE_NUMBER`, `VITE_CONTACT_EMAIL`, `VITE_ADDRESS` | Business contact details |
+| `VITE_WHATSAPP_NUMBER`, `VITE_PHONE_NUMBER`, `VITE_CONTACT_EMAIL`, `VITE_ADDRESS` | Fallback contact details while settings load (the live values come from Admin → Settings) |
+
+Backend variables are documented in [backend/README.md](backend/README.md).
 
 ## License
 
