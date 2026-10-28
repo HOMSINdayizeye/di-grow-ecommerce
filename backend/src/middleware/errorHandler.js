@@ -29,7 +29,12 @@ export function errorHandler(err, _req, res, _next) {
     message = 'Request body is too large';
   } else if (err.name === 'MulterError') {
     status = 400;
-    message = err.code === 'LIMIT_FILE_SIZE' ? 'Image must be 5 MB or smaller' : err.message;
+    message =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? err.field === 'catalog'
+          ? 'PDF must be 40 MB or smaller'
+          : 'Image must be 5 MB or smaller'
+        : err.message;
   }
 
   if (status >= 500) logger.error(err);

@@ -88,6 +88,47 @@ export const productUpdateSchema = productSchema.innerType().partial().refine((v
   message: 'Compare-at price should be higher than the price',
 });
 
+const nullableMoney = z.preprocess((v) => (v === '' || v === null || v === undefined ? null : v), money.nullable());
+
+/** Edits an admin makes on catalogue-import candidates before turning them into products. */
+export const catalogItemsUpdateSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        _id: objectId,
+        name: z.string().trim().max(120).optional(),
+        sku: z.string().trim().max(40).optional(),
+        brand: z.string().trim().max(60).optional(),
+        categoryId: z.union([objectId, z.literal(''), z.null()]).optional(),
+        price: nullableMoney.optional(),
+        compareAtPrice: nullableMoney.optional(),
+        stockQty: z.coerce.number().int('Whole numbers only').min(0).optional(),
+        shortDescription: z.string().trim().max(160).optional(),
+        description: z.string().trim().max(20000).optional(),
+        requiresPrescription: bool.optional(),
+        images: z.array(z.string().trim().min(1)).max(6).optional(),
+        tags: z
+          .union([z.array(z.string()), z.string()])
+          .transform((v) => (Array.isArray(v) ? v : String(v).split(',')).map((t) => String(t).trim().toLowerCase()).filter(Boolean))
+          .optional(),
+        status: z.enum(['pending', 'skipped']).optional(),
+      })
+    )
+    .min(1)
+    .max(500),
+});
+
+export const catalogCommitSchema = z.object({
+  itemIds: z.array(objectId).min(1, 'Select at least one product').max(500),
+  defaults: z
+    .object({
+      categoryId: z.union([objectId, z.literal('')]).optional(),
+      stockQty: z.coerce.number().int().min(0).optional(),
+    })
+    .optional()
+    .default({}),
+});
+
 export const categorySchema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(60),
   description: optionalStr(200),

@@ -55,6 +55,43 @@ export const productService = {
     form.append('folder', folder);
     return api.post('/admin/uploads', form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
+
+  /* -------- Catalogue PDF imports (admin) -------- */
+  /** Upload a catalogue PDF; the API reads pictures and text and answers with the candidates. */
+  async importCatalog(file, onProgress) {
+    if (USE_MOCK) throw new Error('Catalogue import needs the real API (set VITE_USE_MOCK=false).');
+    const form = new FormData();
+    form.append('catalog', file);
+    return api.post('/admin/products/imports', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 5 * 60 * 1000,
+      onUploadProgress: onProgress ? (e) => onProgress(e.total ? Math.round((e.loaded / e.total) * 100) : 0) : undefined,
+    });
+  },
+
+  async listImports() {
+    if (USE_MOCK) return { data: [] };
+    return api.get('/admin/products/imports');
+  },
+
+  async getImport(id) {
+    if (USE_MOCK) throw new Error('Catalogue import needs the real API (set VITE_USE_MOCK=false).');
+    return api.get(`/admin/products/imports/${id}`);
+  },
+
+  /** Save edits on candidates: [{ _id, name, price, categoryId, ... }]. */
+  async updateImportItems(id, items) {
+    return api.put(`/admin/products/imports/${id}/items`, { items });
+  },
+
+  /** Turn the selected candidates into products. Answers { created[], failed[], import }. */
+  async commitImport(id, itemIds, defaults = {}) {
+    return api.post(`/admin/products/imports/${id}/commit`, { itemIds, defaults });
+  },
+
+  async removeImport(id) {
+    return api.delete(`/admin/products/imports/${id}`);
+  },
 };
 
 export default productService;

@@ -29,7 +29,18 @@ The seed reads the demo catalog from `frontend/src/mocks/data.js`, so the mock a
 
 ## Environment variables
 
-See `.env.example`. `JWT_SECRET` is required. Without `SMTP_HOST`, password-reset links and new-order emails are printed to the server console instead of being sent.
+See `.env.example`. `JWT_SECRET` is required.
+
+**Email** (password-reset links, new-order alerts, the "send test email" button under Admin → Settings → Notifications):
+
+| Setup | Variables |
+| --- | --- |
+| Brevo with an API key (`xkeysib-…`, from SMTP & API → API Keys) | `BREVO_API_KEY`, `BREVO_EMAIL_SENDER`, `BREVO_EMAIL_SENDER_NAME` |
+| Brevo with an SMTP key (`xsmtpsib-…`, from SMTP & API → SMTP) | the same plus `SMTP_USER` = the **Login** shown next to the key (e.g. `8a1b2c001@smtp-brevo.com`) |
+| Any other SMTP server | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` |
+| Nothing set | emails are printed to the API console |
+
+The sender address must be a verified sender in Brevo. The API checks the login when it starts and logs `Mail: ready via …` or `Mail: NOT working …` with a hint; `GET /admin/settings/mail-status` returns the same check.
 
 ## Roles
 
@@ -79,6 +90,10 @@ All paths are under `/api`. Admin routes need `Authorization: Bearer <token>`.
 | PUT/DELETE | `/admin/staff/:id` | admin only. `PUT` accepts `name, email, role, isActive, password` |
 | GET/POST | `/admin/products` | `q, category (slug), stock (low or out), sort, page, limit` |
 | GET/PUT/DELETE | `/admin/products/:id` | Body uses `categoryId`; `tags` may be an array or comma string |
+| GET/POST | `/admin/products/imports` | `POST` is multipart `catalog` (PDF, max 40 MB): pictures and the text next to them become draft products |
+| GET/DELETE | `/admin/products/imports/:id` | The drafts of one PDF (`items[]` with `status` pending / imported / skipped) |
+| PUT | `/admin/products/imports/:id/items` | `{ items: [{ _id, name, price, categoryId, description, … }] }` saves edits on drafts |
+| POST | `/admin/products/imports/:id/commit` | `{ itemIds[], defaults: { categoryId?, stockQty? } }` creates products; answers `{ created[], failed[] }` |
 | GET/POST | `/admin/categories` | |
 | PUT/DELETE | `/admin/categories/:id` | Delete refuses while products use it |
 | GET | `/admin/orders` | `status, q, from, to, page, limit` |
@@ -88,6 +103,8 @@ All paths are under `/api`. Admin routes need `Authorization: Bearer <token>`.
 | GET/POST | `/admin/blog` | `q, status (published or draft), page, limit` |
 | GET/PUT/DELETE | `/admin/blog/:id` | |
 | POST | `/admin/uploads` | multipart `image` (jpg, png, webp, gif, svg, max 5 MB), optional `folder` → `{ url }` |
+| GET | `/admin/settings/mail-status` | admin only. Which email provider is configured and whether the login works |
+| POST | `/admin/settings/test-email` | admin only. Sends a test email to the signed-in admin |
 | GET | `/admin/notifications` | Latest 30, `meta.unread` |
 | PATCH | `/admin/notifications/:id/read`, POST `/admin/notifications/read-all` | |
 | GET | `/admin/reports/dashboard` | KPIs, 14-day series, status breakdown, top products, recent orders |

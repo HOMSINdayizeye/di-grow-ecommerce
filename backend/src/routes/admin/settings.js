@@ -9,5 +9,7 @@ router.use(requireAuth);
 
 router.get('/', ctrl.get);
 router.put('/', requireAdmin, validate(settingsSchema), ctrl.update);
+router.get('/mail-status', requireAdmin, ctrl.mailStatus);
+router.post('/test-email', requireAdmin, ctrl.testEmail);
 
 export default router;

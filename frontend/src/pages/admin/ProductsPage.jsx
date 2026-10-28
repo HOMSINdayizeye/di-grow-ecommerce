@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X, FileUp } from 'lucide-react';
 import SEOHead from '@/seo/SEOHead';
 import PageHeader from '@/components/admin/PageHeader';
 import ProductsTable from '@/components/admin/ProductsTable';
@@ -92,9 +92,14 @@ export default function ProductsPage() {
         highlight="catalogue"
         subtitle={meta?.total != null ? `${meta.total} product${meta.total === 1 ? '' : 's'} in the shop` : 'Manage stock, prices and prescription flags.'}
         actions={
-          <Button to="/admin/products/new" size="sm" icon={Plus}>
-            Add product
-          </Button>
+          <>
+            <Button to="/admin/products/import" variant="secondary" size="sm" icon={FileUp}>
+              Import PDF catalogue
+            </Button>
+            <Button to="/admin/products/new" size="sm" icon={Plus}>
+              Add product
+            </Button>
+          </>
         }
       />
 

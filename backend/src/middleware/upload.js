@@ -44,3 +44,14 @@ export const uploadImage = multer({
     return cb(null, true);
   },
 }).single('image');
+
+/** Catalogue PDFs are kept in memory and parsed straight away; nothing is stored until it is read. */
+export const uploadPdf = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 40 * 1024 * 1024, files: 1 },
+  fileFilter(_req, file, cb) {
+    const isPdf = file.mimetype === 'application/pdf' || /\.pdf$/i.test(file.originalname || '');
+    if (!isPdf) return cb(ApiError.badRequest('Upload a PDF file'));
+    return cb(null, true);
+  },
+}).single('catalog');

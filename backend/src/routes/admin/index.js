@@ -7,11 +7,12 @@ import * as categories from '../../controllers/categoryController.js';
 import * as orders from '../../controllers/orderController.js';
 import * as blog from '../../controllers/blogController.js';
 import * as uploads from '../../controllers/uploadController.js';
+import * as catalog from '../../controllers/catalogImportController.js';
 import * as notifications from '../../controllers/notificationController.js';
 import * as reports from '../../controllers/reportController.js';
 import { validate } from '../../middleware/validate.js';
 import { requireAuth, requireAdmin } from '../../middleware/auth.js';
-import { uploadImage } from '../../middleware/upload.js';
+import { uploadImage, uploadPdf } from '../../middleware/upload.js';
 import {
   productSchema,
   productUpdateSchema,
@@ -21,6 +22,8 @@ import {
   blogPostUpdateSchema,
   orderStatusSchema,
   orderNotesSchema,
+  catalogItemsUpdateSchema,
+  catalogCommitSchema,
 } from '../../validations/index.js';
 
 const router = Router();
@@ -33,6 +36,14 @@ router.use(requireAuth);
 
 router.use('/staff', staffRoutes);
 router.use('/settings', settingsRoutes);
+
+// Catalogue PDF imports (before /products/:id so "imports" is never read as an id).
+router.get('/products/imports', catalog.list);
+router.post('/products/imports', uploadPdf, catalog.create);
+router.get('/products/imports/:id', catalog.get);
+router.put('/products/imports/:id/items', validate(catalogItemsUpdateSchema), catalog.updateItems);
+router.post('/products/imports/:id/commit', validate(catalogCommitSchema), catalog.commit);
+router.delete('/products/imports/:id', catalog.remove);
 
 router.get('/products', products.listAdmin);
 router.post('/products', validate(productSchema), products.create);

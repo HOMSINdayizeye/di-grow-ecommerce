@@ -7,6 +7,7 @@ import { Store, Truck, Megaphone, Bell, Share2, Lock, Save, KeyRound } from 'luc
 import SEOHead from '@/seo/SEOHead';
 import PageHeader from '@/components/admin/PageHeader';
 import ErrorState from '@/components/admin/ErrorState';
+import MailTestCard from '@/components/admin/MailTestCard';
 import FormField, { Switch } from '@/components/common/FormField';
 import Button from '@/components/common/Button';
 import { Skeleton } from '@/components/common/Loader';
@@ -222,6 +223,8 @@ export default function SettingsPage() {
               <div className="divider-gradient opacity-40" />
               {switchField('notifySms', 'SMS alerts', 'Send an SMS for every new order')}
               <FormField label="SMS recipients" placeholder="+250790911427, +250790911427" help="Comma separated, with country code" error={errors.notifySmsRecipients?.message} {...register('notifySmsRecipients')} />
+              <div className="divider-gradient opacity-40" />
+              <MailTestCard />
             </Section>
           </div>
 

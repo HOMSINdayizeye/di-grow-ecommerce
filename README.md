@@ -74,6 +74,8 @@ Open http://localhost. nginx serves the frontend and proxies `/api`, `/socket.io
 - Dashboard with KPIs and charts, real-time new-order notifications (Socket.io)
 - Orders list, filters, CSV export, order details with status workflow and notes
 - Products and categories CRUD with image uploads, blog CRUD with preview
+- Import a PDF catalogue: pictures and the text beside them become draft products; the admin adds prices, picks categories, edits descriptions and imports them (Admin → Products → Import PDF catalogue)
+- Email through Brevo (or any SMTP) for password resets and order alerts, with a test button under Settings → Notifications
 - Reports, staff management, store settings
 
 See [docs/frontend-conventions.md](docs/frontend-conventions.md) for the design system and the data contract the backend must honour.

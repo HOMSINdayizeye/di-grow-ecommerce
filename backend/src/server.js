@@ -5,10 +5,12 @@ import { createApp } from './app.js';
 import { initSocket, closeSocket } from './socket/index.js';
 import { startJobs, stopJobs } from './jobs/index.js';
 import { logger } from './lib/logger.js';
+import { logMailerStatus } from './lib/mailer.js';
 
 async function main() {
   assertEnv();
   await connectDb();
+  logMailerStatus().catch((err) => logger.warn('Mail check failed', err.message));
 
   const app = createApp();
   const server = http.createServer(app);

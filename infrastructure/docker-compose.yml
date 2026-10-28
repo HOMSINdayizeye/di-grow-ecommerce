@@ -35,6 +35,9 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-Di-Grow <no-reply@digrow.rw>}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+      BREVO_EMAIL_SENDER: ${BREVO_EMAIL_SENDER:-}
+      BREVO_EMAIL_SENDER_NAME: ${BREVO_EMAIL_SENDER_NAME:-Di-Grow}
     volumes:
       - uploads:/app/backend/uploads
 
