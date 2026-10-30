@@ -248,7 +248,7 @@ export default function QuickOrderModal({ open, onClose }) {
             </ul>
 
             <div className="mt-6 grid gap-3">
-              <a href={whatsappLink(buildWhatsAppMessage(order, settings.storeName), settings.whatsapp)} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp btn-lg w-full">
+              <a href={whatsappLink(buildWhatsAppMessage(order, settings.storeName), settings.whatsapp)} target="_blank" rel="noopener noreferrer" onClick={onClose} className="btn btn-whatsapp btn-lg w-full">
                 <WhatsAppIcon className="h-5 w-5" /> Send order on WhatsApp
               </a>
               <Link to="/track-order" onClick={onClose} className="btn btn-secondary btn-md w-full">

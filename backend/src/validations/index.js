@@ -184,7 +184,10 @@ export const createOrderSchema = z.object({
 });
 
 export const trackOrderSchema = z.object({
-  orderNumber: z.string().trim().min(5, 'Enter your order number').max(30),
+  orderNumber: z
+    .string()
+    .transform((v) => v.replace(/\s+/g, '').toUpperCase())
+    .refine((v) => v.length >= 5 && v.length <= 30, 'Enter your order number'),
   phone: rwandaPhone,
 });
 

@@ -10,10 +10,11 @@ import { logger } from '../lib/logger.js';
 
 const LOW_STOCK = 5;
 
+/** DG-YYYYMMDD-1001, -1002, ... per day: always at least four digits so it is easy to read out and type. */
 async function nextOrderNumber(date = new Date()) {
   const ymd = date.toISOString().slice(0, 10).replace(/-/g, '');
   const seq = await Counter.next(`order:${ymd}`);
-  return `DG-${ymd}-${seq}`;
+  return `DG-${ymd}-${1000 + seq}`;
 }
 
 /* ------------------------------ Public ------------------------------ */

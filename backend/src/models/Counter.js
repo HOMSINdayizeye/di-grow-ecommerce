@@ -1,10 +1,13 @@
 import mongoose from 'mongoose';
 
-/** Atomic per-key sequence, used for daily order numbers (DG-YYYYMMDD-1001, 1002, ...). */
-const counterSchema = new mongoose.Schema({ _id: String, seq: { type: Number, default: 1000 } });
+/**
+ * Atomic per-key sequence. The first call for a key returns 1, then 2, 3...
+ * (A schema default cannot be combined with $inc on insert, so callers add any offset themselves.)
+ */
+const counterSchema = new mongoose.Schema({ _id: String, seq: { type: Number, default: 0 } });
 
 counterSchema.statics.next = async function next(key) {
-  const doc = await this.findByIdAndUpdate(key, { $inc: { seq: 1 } }, { new: true, upsert: true, setDefaultsOnInsert: true });
+  const doc = await this.findByIdAndUpdate(key, { $inc: { seq: 1 } }, { new: true, upsert: true });
   return doc.seq;
 };
 

@@ -118,7 +118,7 @@ async function seedOrders(mock, prodIds) {
     const ymd = new Date(o.createdAt).toISOString().slice(0, 10).replace(/-/g, '');
     const seq = await Counter.next(`order:${ymd}`);
     await Order.create({
-      orderNumber: `DG-${ymd}-${seq}`,
+      orderNumber: `DG-${ymd}-${1000 + seq}`,
       trackingToken: randomToken(18),
       customer: { ...o.customer, phone: normalisePhone(o.customer.phone) },
       items,
