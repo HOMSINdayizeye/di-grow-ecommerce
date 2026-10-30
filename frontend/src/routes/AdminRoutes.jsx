@@ -27,7 +27,9 @@ export default function AdminRoutes() {
     <Route path="admin">
       <Route path="login" element={<LoginPage />} />
       <Route path="forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="reset-password/:token" element={<ResetPasswordPage />} />
+      <Route path="reset-password" element={<ResetPasswordPage />} />
+      {/* Old emailed links pointed here; send them to the code page. */}
+      <Route path="reset-password/:token" element={<Navigate to="/admin/reset-password" replace />} />
 
       <Route element={<AdminProtectedRoute />}>
         <Route element={<AdminLayout />}>

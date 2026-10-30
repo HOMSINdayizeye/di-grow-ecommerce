@@ -12,8 +12,10 @@ const userSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     lastLoginAt: { type: Date, default: null },
     passwordChangedAt: { type: Date, default: null },
+    /** sha256 of the 5-digit reset code emailed to the user, with its expiry and how many wrong tries were made. */
     resetTokenHash: { type: String, select: false },
     resetTokenExpires: { type: Date, select: false },
+    resetAttempts: { type: Number, default: 0, select: false },
   },
   { timestamps: true }
 );

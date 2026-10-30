@@ -253,7 +253,7 @@ export const mockApi = {
 
   async forgotPassword() {
     await delay(600);
-    return { data: { message: 'If that email exists, a reset link has been sent.' } };
+    return { data: { message: 'If that email exists, a 5-digit code has been sent to it.' } };
   },
 
   async resetPassword() {

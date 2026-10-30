@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, KeyRound, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, KeyRound, CheckCircle2, ArrowLeft, MailCheck } from 'lucide-react';
 import SEOHead from '@/seo/SEOHead';
 import AuthShell from '@/components/admin/AuthShell';
 import FormField from '@/components/common/FormField';
@@ -12,35 +12,42 @@ import { adminAuthService } from '@/services/adminAuthService';
 import { getErrorMessage } from '@/services/api';
 import { resetPasswordSchema } from '@/validations/adminSchemas';
 
+/** Step 2 of the reset: the 5-digit code from the email plus the new password. */
 export default function ResetPasswordPage() {
-  const { token } = useParams();
+  const { state } = useLocation();
+  const presetEmail = state?.email || '';
   const [done, setDone] = useState(null);
   const [show, setShow] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({ resolver: zodResolver(resetPasswordSchema), defaultValues: { password: '', confirmPassword: '' } });
+  } = useForm({ resolver: zodResolver(resetPasswordSchema), defaultValues: { email: presetEmail, code: '', password: '', confirmPassword: '' } });
 
-  const onSubmit = async ({ password }) => {
+  const onSubmit = async ({ email, code, password }) => {
     try {
-      const res = await adminAuthService.resetPassword(token, password);
+      const res = await adminAuthService.resetPassword({ email, code, password });
       setDone(res?.data?.message || 'Password updated. You can now sign in.');
     } catch (err) {
-      toast.error(getErrorMessage(err, 'This reset link is invalid or has expired.'));
+      toast.error(getErrorMessage(err, 'That code is wrong or has expired.'));
     }
   };
 
   return (
     <AuthShell
-      title="Choose a new"
-      highlight="password"
-      subtitle="Use at least 8 characters. Avoid passwords you use elsewhere."
+      title="Enter your"
+      highlight="code"
+      subtitle={presetEmail ? `We sent a 5-digit code to ${presetEmail}. It expires in 10 minutes.` : 'Type the 5-digit code from the email and choose a new password.'}
       footer={
         !done && (
-          <Link to="/admin/login" className="inline-flex items-center gap-1 font-medium text-brand-500 hover:underline">
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to sign in
-          </Link>
+          <span className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+            <Link to="/admin/login" className="inline-flex items-center gap-1 font-medium text-brand-500 hover:underline">
+              <ArrowLeft className="h-3.5 w-3.5" /> Back to sign in
+            </Link>
+            <Link to="/admin/forgot-password" className="font-medium text-brand-500 hover:underline">
+              Send a new code
+            </Link>
+          </span>
         )
       }
     >
@@ -58,6 +65,23 @@ export default function ResetPasswordPage() {
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+          {presetEmail && (
+            <p className="flex items-center gap-2 rounded-xl bg-success/10 px-3 py-2 text-xs text-success">
+              <MailCheck className="h-4 w-4 flex-shrink-0" /> Check your inbox and spam folder for the code.
+            </p>
+          )}
+          <FormField label="Email" type="email" autoComplete="email" placeholder="you@digrow.rw" error={errors.email?.message} {...register('email')} />
+          <FormField
+            label="5-digit code"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={5}
+            placeholder="12345"
+            inputClassName="text-center font-mono text-2xl tracking-[0.5em]"
+            error={errors.code?.message}
+            {...register('code')}
+          />
           <div>
             <label htmlFor="password" className="label">
               New password

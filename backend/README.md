@@ -31,7 +31,7 @@ The seed reads the demo catalog from `frontend/src/mocks/data.js`, so the mock a
 
 See `.env.example`. `JWT_SECRET` is required.
 
-**Email** (password-reset links, new-order alerts, the "send test email" button under Admin → Settings → Notifications):
+**Email** (password-reset codes, new-order alerts, the "send test email" button under Admin → Settings → Notifications):
 
 | Setup | Variables |
 | --- | --- |
@@ -83,8 +83,8 @@ All paths are under `/api`. Admin routes need `Authorization: Bearer <token>`.
 | POST | `/admin/auth/login` | `{ email, password, remember? }` → `{ token, user }` |
 | GET | `/admin/auth/me` | Current user |
 | POST | `/admin/auth/logout` | Stateless; the client drops the token |
-| POST | `/admin/auth/forgot-password` | Emails a link to `FRONTEND_URL/admin/reset-password/:token`, valid for one hour |
-| POST | `/admin/auth/reset-password` | `{ token, password }` |
+| POST | `/admin/auth/forgot-password` | `{ email }`. Emails a 5-digit code, valid for 10 minutes; the reply is the same whether or not the account exists |
+| POST | `/admin/auth/reset-password` | `{ email, code, password }`. Five wrong codes invalidate the code; request a new one |
 | POST | `/admin/auth/change-password` | `{ currentPassword, newPassword }` |
 | GET/POST | `/admin/staff` | admin only |
 | PUT/DELETE | `/admin/staff/:id` | admin only. `PUT` accepts `name, email, role, isActive, password` |

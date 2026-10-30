@@ -38,9 +38,10 @@ export const adminAuthService = {
     return api.post('/admin/auth/forgot-password', { email });
   },
 
-  async resetPassword(token, password) {
-    if (USE_MOCK) return (await getMock()).resetPassword({ token, password });
-    return api.post('/admin/auth/reset-password', { token, password });
+  /** Set a new password with the 5-digit code that was emailed to that address. */
+  async resetPassword({ email, code, password }) {
+    if (USE_MOCK) return (await getMock()).resetPassword({ email, code, password });
+    return api.post('/admin/auth/reset-password', { email, code, password });
   },
 
   async changePassword(currentPassword, newPassword) {
