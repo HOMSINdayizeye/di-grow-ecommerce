@@ -211,7 +211,7 @@ export default function OrderConfirmationPage() {
               <h3 className="flex items-center gap-2 font-display text-lg font-bold">
                 <MapPin className="h-5 w-5 text-brand-500" /> Delivery address
               </h3>
-              <p className="mt-3 text-sm font-medium text-ink">{customer.address}</p>
+              <p className="mt-3 text-sm font-medium text-ink">{customer.address || 'To be agreed with you on WhatsApp'}</p>
               <p className="text-sm text-muted">
                 {[customer.sector, customer.district].filter(Boolean).join(', ')}
                 {customer.district ? ', Kigali' : ''}

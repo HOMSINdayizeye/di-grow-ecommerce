@@ -166,9 +166,10 @@ export const createOrderSchema = z.object({
     name: z.string().trim().min(2, 'Enter your full name').max(80),
     phone: rwandaPhone,
     email: z.string().trim().email('Enter a valid email address').optional().or(z.literal('')).default(''),
-    district: z.string().trim().min(2, 'Choose your district').max(40),
-    sector: z.string().trim().min(1, 'Choose your sector').max(60),
-    address: z.string().trim().min(5, 'Add a street or landmark so our rider can find you').max(200),
+    // Location is optional: the quick "order now" flow agrees the delivery place on WhatsApp afterwards.
+    district: optionalStr(40),
+    sector: optionalStr(60),
+    address: optionalStr(200),
     notes: optionalStr(500),
   }),
   items: z

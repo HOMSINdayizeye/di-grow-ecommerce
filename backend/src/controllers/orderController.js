@@ -1,3 +1,4 @@
+import { env } from '../config/env.js';
 import { Order, Product, Settings, Counter, AuditLog } from '../models/index.js';
 import { ApiError } from '../lib/ApiError.js';
 import { asyncHandler } from '../lib/asyncHandler.js';
@@ -63,9 +64,26 @@ export const create = asyncHandler(async (req, res) => {
     orderId: order._id,
   });
   notifyShop(order, settings).catch((err) => logger.warn('Order notification failed', err.message));
+  notifyCustomer(order, settings).catch((err) => logger.warn('Customer confirmation email failed', err.message));
 
   res.status(201).json({ success: true, data: json });
 });
+
+/** Email the customer their order number and how to track it, when they gave an address. */
+async function notifyCustomer(order, settings) {
+  const to = order.customer.email;
+  if (!to) return;
+  const store = settings.storeName || 'Di-Grow';
+  const lines = order.items.map((i) => `- ${i.quantity} x ${i.name} (RWF ${i.price * i.quantity})`).join('\n');
+  const trackUrl = `${env.frontendUrl}/track-order`;
+  const place = order.customer.address || order.customer.district ? `${order.customer.address}${order.customer.sector ? `, ${order.customer.sector}` : ''}${order.customer.district ? `, ${order.customer.district}` : ''}` : 'to be agreed with you on WhatsApp';
+  await sendMail({
+    to,
+    subject: `${store} order ${order.orderNumber} received`,
+    text: `Hello ${order.customer.name},\n\nThank you, we received your order request ${order.orderNumber}.\n\nItems:\n${lines}\n\nSubtotal: RWF ${order.subtotal}\nDelivery: RWF ${order.deliveryFee}\nTotal on delivery: RWF ${order.total}\nDelivery place: ${place}\n\nWe confirm every order before dispatch. Track it any time at ${trackUrl} with your order number and phone number.\n\n${store}`,
+    html: `<p>Hello ${order.customer.name},</p><p>Thank you, we received your order request <strong>${order.orderNumber}</strong>.</p><ul>${order.items.map((i) => `<li>${i.quantity} x ${i.name} (RWF ${i.price * i.quantity})</li>`).join('')}</ul><p>Subtotal: RWF ${order.subtotal}<br/>Delivery: RWF ${order.deliveryFee}<br/><strong>Total on delivery: RWF ${order.total}</strong><br/>Delivery place: ${place}</p><p>We confirm every order before dispatch. <a href="${trackUrl}">Track it any time</a> with your order number and phone number.</p><p>${store}</p>`,
+  });
+}
 
 /** Email the shop about a new order when enabled in settings (SMS has no provider yet, so it is logged). */
 async function notifyShop(order, settings) {

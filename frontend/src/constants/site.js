@@ -16,9 +16,11 @@ export const SITE = {
   },
 };
 
-export function whatsappLink(message = '') {
+/** wa.me link to the shop. Pass the number from Admin > Settings when available; the env value is the fallback. */
+export function whatsappLink(message = '', number = SITE.whatsapp) {
   const text = encodeURIComponent(message || `Hello ${SITE.name}, I would like to place an order.`);
-  return `https://wa.me/${SITE.whatsapp}?text=${text}`;
+  const digits = String(number || SITE.whatsapp).replace(/\D/g, '');
+  return `https://wa.me/${digits}?text=${text}`;
 }
 
 export const NAV_LINKS = [

@@ -40,19 +40,25 @@ function BigLoader({ title, subtitle }) {
   );
 }
 
-function buildWhatsAppMessage(order) {
+function buildWhatsAppMessage(order, storeName = 'Di-Grow') {
   const lines = order.items.map((i) => `- ${i.name} x ${i.quantity} (${formatCurrency(i.price * i.quantity)})`);
+  const trackUrl = typeof window !== 'undefined' ? `${window.location.origin}/track-order` : '/track-order';
   return [
-    `Hello Di-Grow, I have just placed order ${order.orderNumber}.`,
+    `Hello ${storeName}, I have just placed order ${order.orderNumber}.`,
     '',
     'Items:',
     ...lines,
     '',
+    `Subtotal: ${formatCurrency(order.subtotal)}`,
+    `Delivery: ${order.deliveryFee ? formatCurrency(order.deliveryFee) : 'Free'}`,
     `Total: ${formatCurrency(order.total)}`,
-    `Email: ${order.customer?.email || ''}`,
-    `Phone: ${order.customer?.phone || ''}`,
     '',
-    'Please confirm my delivery. Thank you!',
+    `Name: ${order.customer?.name || ''}`,
+    `Phone: ${order.customer?.phone || ''}`,
+    `Email: ${order.customer?.email || ''}`,
+    '',
+    'Delivery location: to be agreed here on WhatsApp.',
+    `I will track it at ${trackUrl} with my order number and phone.`,
   ].join('\n');
 }
 
@@ -112,8 +118,8 @@ export default function QuickOrderModal({ open, onClose }) {
       email: values.email,
       district: '',
       sector: '',
-      address: 'To be confirmed by phone or WhatsApp',
-      notes: 'Quick order from the cart. Please confirm the delivery address with the customer.',
+      address: '',
+      notes: 'Quick order from the cart: delivery location to be agreed with the customer on WhatsApp.',
     };
     setItem(REMEMBER_KEY, { ...remembered, name: values.name || remembered.name || '', phone: values.phone, email: values.email });
     try {
@@ -161,7 +167,7 @@ export default function QuickOrderModal({ open, onClose }) {
           <form onSubmit={handleSubmit(submit)} noValidate className="p-6">
             <span className="eyebrow">Almost done</span>
             <h3 className="mt-3 font-display text-2xl font-bold">Where should we send your order number?</h3>
-            <p className="mt-1 text-sm text-muted">We email the order number and call this phone to confirm the delivery address. No payment online.</p>
+            <p className="mt-1 text-sm text-muted">You get an order number right away and send the order to us on WhatsApp, where we agree the delivery place. No payment online.</p>
 
             <div className="mt-5 space-y-4">
               <FormField label="Email" required type="email" placeholder="you@example.com" autoComplete="email" error={errors.email?.message} {...register('email')} />
@@ -229,17 +235,25 @@ export default function QuickOrderModal({ open, onClose }) {
 
             <ul className="mx-auto mt-5 max-w-sm space-y-2 text-left text-sm text-muted">
               <li className="flex items-start gap-2">
-                <Mail className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-500" /> We will send this number to <span className="font-medium text-ink">{order.customer?.email}</span>.
+                <WhatsAppIcon className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#25d366]" /> Tap the green button to send this order to us on WhatsApp. We agree the delivery place and time there.
               </li>
               <li className="flex items-start gap-2">
-                <PhoneCall className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-500" /> We call {order.customer?.phone} within a few hours to confirm your delivery address. You pay on delivery.
+                <PhoneCall className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-500" /> Keep the number: with it and {order.customer?.phone} you can track the order until it is confirmed and delivered. You pay on delivery.
               </li>
+              {order.customer?.email && (
+                <li className="flex items-start gap-2">
+                  <Mail className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-500" /> A copy goes to <span className="font-medium text-ink">{order.customer.email}</span>.
+                </li>
+              )}
             </ul>
 
             <div className="mt-6 grid gap-3">
-              <a href={whatsappLink(buildWhatsAppMessage(order))} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp btn-lg w-full">
-                <WhatsAppIcon className="h-5 w-5" /> Send order to admin on WhatsApp
+              <a href={whatsappLink(buildWhatsAppMessage(order, settings.storeName), settings.whatsapp)} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp btn-lg w-full">
+                <WhatsAppIcon className="h-5 w-5" /> Send order on WhatsApp
               </a>
+              <Link to="/track-order" onClick={onClose} className="btn btn-secondary btn-md w-full">
+                Track this order
+              </Link>
               <Link to={`/order-confirmation/${order.trackingToken}`} state={{ order }} onClick={onClose} className="btn btn-secondary btn-md w-full">
                 View order details <ArrowRight className="h-4 w-4" />
               </Link>

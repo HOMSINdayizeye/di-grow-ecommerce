@@ -150,7 +150,7 @@ export default function TrackOrderPage() {
                         <MapPin className="h-5 w-5 text-brand-500" /> Delivery address
                       </h3>
                       <p className="mt-3 text-sm font-medium text-ink">{order.customer?.name}</p>
-                      <p className="text-sm text-muted">{order.customer?.address}</p>
+                      <p className="text-sm text-muted">{order.customer?.address || 'To be agreed with you on WhatsApp'}</p>
                       <p className="text-sm text-muted">
                         {[order.customer?.sector, order.customer?.district].filter(Boolean).join(', ')}
                         {order.customer?.district ? ', Kigali' : ''}

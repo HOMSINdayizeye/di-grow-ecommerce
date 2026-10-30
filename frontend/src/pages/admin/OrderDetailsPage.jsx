@@ -193,6 +193,7 @@ export default function OrderDetailsPage() {
                       <dd className="font-medium text-ink">
                         {[c.district, c.sector].filter(Boolean).join(' · ')}
                         {c.address && <span className="block font-normal text-muted">{c.address}</span>}
+                        {!c.district && !c.sector && !c.address && <span className="text-gold-500">Not given yet: agree the delivery place with the customer on WhatsApp</span>}
                       </dd>
                     </div>
                   </div>
