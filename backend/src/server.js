@@ -6,10 +6,12 @@ import { initSocket, closeSocket } from './socket/index.js';
 import { startJobs, stopJobs } from './jobs/index.js';
 import { logger } from './lib/logger.js';
 import { logMailerStatus } from './lib/mailer.js';
+import { ensureFirstAdmin } from './lib/bootstrap.js';
 
 async function main() {
   assertEnv();
   await connectDb();
+  await ensureFirstAdmin().catch((err) => logger.warn('Could not create the first admin', err.message));
   logMailerStatus().catch((err) => logger.warn('Mail check failed', err.message));
 
   const app = createApp();

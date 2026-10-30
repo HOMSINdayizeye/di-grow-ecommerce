@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { getItem, removeItem } from '@/utils/storage';
 
-export const USE_MOCK = String(import.meta.env.VITE_USE_MOCK ?? 'true') === 'true';
+/**
+ * Demo mode: in-browser mock data instead of the API. Only when VITE_USE_MOCK is explicitly "true",
+ * so a deployment that forgets the variable talks to the real API instead of silently showing demo data.
+ */
+export const USE_MOCK = String(import.meta.env.VITE_USE_MOCK ?? 'false').trim().toLowerCase() === 'true';
 export const API_URL = import.meta.env.VITE_API_URL || '/api';
 export const ADMIN_TOKEN_KEY = 'admin:token';
 

@@ -56,8 +56,10 @@ export const env = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   jwtRememberExpiresIn: process.env.JWT_REMEMBER_EXPIRES_IN || '30d',
   corsOrigins: list(process.env.CORS_ORIGINS, ['http://localhost:5173', 'http://localhost:4173', 'http://localhost']),
-  frontendUrl: (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, ''),
-  uploadsBaseUrl: (process.env.UPLOADS_BASE_URL || '/api/uploads').replace(/\/+$/, ''),
+  // One URL only (used in emails); if several were pasted ("a, b" or "a || b") keep the first.
+  frontendUrl: (String(process.env.FRONTEND_URL || '').split(/[\s,|]+/).filter(Boolean)[0] || 'http://localhost:5173').replace(/\/+$/, ''),
+  // Absolute on Render (RENDER_EXTERNAL_URL is set by Render), so image URLs work from a frontend on another domain.
+  uploadsBaseUrl: (process.env.UPLOADS_BASE_URL || (process.env.RENDER_EXTERNAL_URL ? `${process.env.RENDER_EXTERNAL_URL}/api/uploads` : '/api/uploads')).replace(/\/+$/, ''),
   admin: {
     name: process.env.ADMIN_NAME || 'Admin User',
     email: process.env.ADMIN_EMAIL || 'admin@digrow.rw',

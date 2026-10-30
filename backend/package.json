@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "node --watch --env-file-if-exists=.env src/server.js",
     "start": "node src/server.js",
+    "build": "node -e \"console.log('Di-Grow API has no build step; nothing to do.')\"",
     "seed": "node --env-file-if-exists=.env src/seed/seed.js",
     "seed:demo": "node --env-file-if-exists=.env src/seed/seed.js --demo",
     "seed:reset": "node --env-file-if-exists=.env src/seed/seed.js --reset --demo"

@@ -1,0 +1,51 @@
+# Render Blueprint for the Di-Grow API (the frontend stays on Vercel).
+# Render > New > Blueprint > pick this repository. Render reads this file and creates the service;
+# it then asks for the values marked `sync: false` (secrets and URLs) in its dashboard.
+services:
+  - type: web
+    name: di-grow-api
+    runtime: node
+    plan: free # free: sleeps after 15 min idle and has no persistent disk (uploads vanish on redeploy)
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: MONGODB_URI # MongoDB Atlas connection string (mongodb+srv://...)
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: JWT_REMEMBER_EXPIRES_IN
+        value: 30d
+      - key: ADMIN_NAME
+        value: Admin User
+      - key: ADMIN_EMAIL # first admin, created automatically on the first start
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: FRONTEND_URL # the Vercel site, e.g. https://di-grow-ecommerce.vercel.app (one URL, used in emails)
+        sync: false
+      - key: CORS_ORIGINS # comma separated: the Vercel URL plus any custom domain
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_EMAIL_SENDER
+        sync: false
+      - key: BREVO_EMAIL_SENDER_NAME
+        value: D.I.Grow
+      - key: SMTP_USER # Brevo SMTP login (xxxx@smtp-brevo.com) when BREVO_API_KEY is an xsmtpsib- key
+        sync: false
+    # Uncomment on a paid plan to keep uploaded images across deploys:
+    # disk:
+    #   name: uploads
+    #   mountPath: /opt/render/project/src/backend/uploads
+    #   sizeGB: 1

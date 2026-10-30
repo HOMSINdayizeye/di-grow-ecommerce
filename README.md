@@ -58,6 +58,30 @@ docker compose exec backend node src/seed/seed.js
 
 Open http://localhost. nginx serves the frontend and proxies `/api`, `/socket.io` and `/sitemap.xml` to the backend container.
 
+## Deploying
+
+The frontend is a static Vite build; the backend is a long-running Node server (Express, Socket.io, file uploads) and needs a host that runs a process, for example Render, Railway, Fly.io or a VPS with `infrastructure/docker-compose.yml`. Vercel can host the **frontend only**.
+
+**Frontend on Vercel** (project root `frontend/`; `frontend/vercel.json` adds the SPA rewrite):
+
+| Variable | Value |
+| --- | --- |
+| `VITE_USE_MOCK` | `false` (already the default in `.env.production`; never `true` in production or the site runs on in-browser demo data) |
+| `VITE_API_URL` | public API URL with the `/api` prefix, e.g. `https://api.digrow.rw/api` |
+| `VITE_SOCKET_URL` | the API host without `/api`, e.g. `https://api.digrow.rw` |
+| `VITE_SITE_URL`, contact variables | as in `frontend/.env.example` |
+
+**Backend on Render** (`render.yaml` at the repo root is a Render Blueprint):
+
+1. Create a free MongoDB Atlas cluster, add a database user, allow access from anywhere (0.0.0.0/0, Render has no fixed IP on the free plan) and copy the `mongodb+srv://` connection string.
+2. Render → New → **Blueprint** → choose this GitHub repository. Render reads `render.yaml` and asks for the values it cannot guess: `MONGODB_URI`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `FRONTEND_URL` (the Vercel URL), `CORS_ORIGINS` (the Vercel URL, plus a custom domain if any, comma separated), the Brevo variables.
+3. Deploy. On the first start with an empty database the API creates the admin account from `ADMIN_EMAIL` / `ADMIN_PASSWORD` by itself (no seed command needed). The log shows `Mail: ready via …` when email is configured correctly.
+4. Copy the service URL (`https://<name>.onrender.com`) into the Vercel variables above and redeploy the frontend.
+
+Notes: the free plan sleeps after 15 minutes without traffic (the first request then takes up to a minute) and has no persistent disk, so uploaded images are lost on the next deploy or restart; a paid plan with the `disk` block in `render.yaml` keeps them. `UPLOADS_BASE_URL` defaults to the Render URL automatically.
+
+**Any other host:** set the same variables plus `UPLOADS_BASE_URL` = `https://<api host>/api/uploads`, then run `npm run seed` once (or let the first start create the admin).
+
 ## Frontend features
 
 **Storefront**
