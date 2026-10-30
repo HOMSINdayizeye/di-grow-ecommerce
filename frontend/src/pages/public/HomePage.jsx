@@ -25,6 +25,13 @@ import { blogService } from '@/services/blogService';
 import { whatsappLink } from '@/constants/site';
 import { WhatsAppIcon } from '@/components/common/WhatsAppButton';
 
+/**
+ * Picture in the home hero (right side). It is shown at its own proportions, never cropped or
+ * stretched, so any shape works. To change it, drop a file in frontend/public/images/ and point
+ * this at it. A width of about 1200px is plenty.
+ */
+const HERO_IMAGE = '/images/hero.webp';
+
 const STATS = [
   { value: '2,500+', label: 'Orders delivered', icon: PackageCheck },
   { value: '200+', label: 'Trusted products', icon: Leaf },
@@ -102,13 +109,15 @@ export default function HomePage() {
           </div>
 
           <div className="relative mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-xl3 border shadow-float" style={{ borderColor: 'var(--glass-border)' }}>
-              <img src="https://picsum.photos/seed/digrow-hero/900/1100" alt="Di-Grow products ready for delivery in Kigali" className="h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-900/80 via-navy-900/10 to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5 text-white">
-                <p className="text-xs uppercase tracking-wider text-white/70">Featured this week</p>
-                <p className="font-display text-xl font-bold">Organic Foliar Fertilizer 1L</p>
-                <Link to="/product/organic-foliar-fertilizer-1l" className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-brand-200">
+            <div className="relative overflow-hidden rounded-xl3 border bg-surface shadow-float" style={{ borderColor: 'var(--glass-border)' }}>
+              {/* Natural proportions: the card grows with the picture instead of cropping it. */}
+              <img src={HERO_IMAGE} alt="D.I.GROW products ready for delivery in Kigali" className="block h-auto w-full" />
+              <div className="flex items-center justify-between gap-4 px-5 py-4">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-wider text-muted">Featured this week</p>
+                  <p className="truncate font-display text-lg font-bold text-ink">Organic Foliar Fertilizer 1L</p>
+                </div>
+                <Link to="/product/organic-foliar-fertilizer-1l" className="inline-flex flex-shrink-0 items-center gap-1 text-sm font-semibold text-brand-500 hover:underline">
                   View product <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>

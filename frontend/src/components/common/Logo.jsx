@@ -1,15 +1,19 @@
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 
-export default function Logo({ to = '/', className, size = 'md', light = false }) {
-  const dims = size === 'sm' ? 'h-8 w-8' : size === 'lg' ? 'h-12 w-12' : 'h-10 w-10';
-  const text = size === 'sm' ? 'text-lg' : size === 'lg' ? 'text-3xl' : 'text-2xl';
+/**
+ * Site logo, from /public/brand (transparent PNGs). Replace those files to change the logo everywhere:
+ *  - digrow-wordmark.png: "D.I.GROW" only, used in headers and the sidebar
+ *  - digrow-logo.png: with the "ORGANIC PLUS Foliar fertilizer" tagline, used where there is room
+ */
+export const LOGO_SRC = '/brand/digrow-logo.png';
+export const WORDMARK_SRC = '/brand/digrow-wordmark.png';
+
+export default function Logo({ to = '/', className, size = 'md', tagline = false }) {
+  const height = size === 'sm' ? 'h-10' : size === 'lg' ? 'h-20' : 'h-12';
   return (
-    <Link to={to} className={clsx('inline-flex items-center gap-2.5', className)} aria-label="Di-Grow home">
-      <img src="/logo.svg" alt="" className={dims} />
-      <span className={clsx('font-display font-extrabold tracking-tight', text, light ? 'text-white' : 'text-ink')}>
-        Di<span className="text-gradient">-Grow</span>
-      </span>
+    <Link to={to} className={clsx('inline-flex items-center', className)} aria-label="D.I.GROW home">
+      <img src={tagline ? LOGO_SRC : WORDMARK_SRC} alt="D.I.GROW" className={clsx(height, 'w-auto max-w-[260px] object-contain')} />
     </Link>
   );
 }

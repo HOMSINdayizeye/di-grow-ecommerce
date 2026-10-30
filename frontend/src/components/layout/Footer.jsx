@@ -16,7 +16,7 @@ export default function Footer() {
       <div className="container relative py-14">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <Logo />
+            <Logo tagline />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
               Trusted health, wellness and agricultural growth products for families and farmers in Kigali.
               Request an order online, we call to confirm, and deliver to your door.

@@ -21,7 +21,7 @@ export default function AuthShell({ title, highlight, subtitle, children, footer
         <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full glow-brand blur-3xl" />
         <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full glow-accent blur-3xl" />
         <div className="relative">
-          <Logo light size="lg" to="/" />
+          <Logo size="lg" tagline to="/" />
         </div>
         <div className="relative max-w-md">
           <span className="eyebrow mb-5">Admin console</span>

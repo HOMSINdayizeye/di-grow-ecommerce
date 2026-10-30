@@ -8,7 +8,7 @@ export default function OrganizationSchema() {
     '@type': ['Organization', 'Store'],
     name: seoConfig.siteName,
     url: seoConfig.siteUrl,
-    logo: `${seoConfig.siteUrl}/logo.svg`,
+    logo: `${seoConfig.siteUrl}/brand/digrow-logo.png`,
     description: seoConfig.defaultDescription,
     telephone: SITE.phone,
     email: SITE.email,
