@@ -47,6 +47,13 @@ function mailConfig() {
   };
 }
 
+function uploadsBase() {
+  const configured = (process.env.UPLOADS_BASE_URL || '/api/uploads').trim().replace(/\/+$/, '');
+  const host = (process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_API_URL || '').trim().replace(/\/+$/, '');
+  if (configured.startsWith('/') && host) return `${host}${configured}`;
+  return configured;
+}
+
 export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   isProd: process.env.NODE_ENV === 'production',
@@ -58,8 +65,9 @@ export const env = {
   corsOrigins: list(process.env.CORS_ORIGINS, ['http://localhost:5173', 'http://localhost:4173', 'http://localhost']),
   // One URL only (used in emails); if several were pasted ("a, b" or "a || b") keep the first.
   frontendUrl: (String(process.env.FRONTEND_URL || '').split(/[\s,|]+/).filter(Boolean)[0] || 'http://localhost:5173').replace(/\/+$/, ''),
-  // Absolute on Render (RENDER_EXTERNAL_URL is set by Render), so image URLs work from a frontend on another domain.
-  uploadsBaseUrl: (process.env.UPLOADS_BASE_URL || (process.env.RENDER_EXTERNAL_URL ? `${process.env.RENDER_EXTERNAL_URL}/api/uploads` : '/api/uploads')).replace(/\/+$/, ''),
+  // Image URLs must be absolute when the frontend lives on another domain. On Render the public
+  // address is known (RENDER_EXTERNAL_URL), so a relative UPLOADS_BASE_URL is completed with it.
+  uploadsBaseUrl: uploadsBase(),
   // Where uploaded pictures are kept: "mongo" (default, in the database, survives redeploys on any host) or "disk" (backend/uploads).
   uploadStorage: (process.env.UPLOAD_STORAGE || 'mongo').trim().toLowerCase() === 'disk' ? 'disk' : 'mongo',
   admin: {

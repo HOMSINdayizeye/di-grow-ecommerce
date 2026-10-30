@@ -21,8 +21,24 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+/**
+ * Uploaded pictures may come back as "/api/uploads/..." (relative to the API). When the API lives
+ * on another host than this site, complete them with that host so <img> tags can load them.
+ */
+const API_ORIGIN = /^https?:\/\//i.test(API_URL) ? new URL(API_URL).origin : '';
+const UPLOAD_PATH_RE = /^\/api\/uploads\//i;
+function absolutizeUploads(value) {
+  if (!API_ORIGIN || value == null) return value;
+  if (typeof value === 'string') return UPLOAD_PATH_RE.test(value) ? API_ORIGIN + value : value;
+  if (Array.isArray(value)) return value.map(absolutizeUploads);
+  if (typeof value === 'object') {
+    for (const key of Object.keys(value)) value[key] = absolutizeUploads(value[key]);
+  }
+  return value;
+}
+
 api.interceptors.response.use(
-  (res) => res.data,
+  (res) => absolutizeUploads(res.data),
   (error) => {
     const status = error.response?.status;
     if (status === 401 && window.location.pathname.startsWith('/admin')) {
