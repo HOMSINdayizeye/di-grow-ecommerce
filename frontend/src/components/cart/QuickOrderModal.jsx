@@ -76,6 +76,12 @@ export default function QuickOrderModal({ open, onClose }) {
   const snapshot = useRef([]);
   const remembered = getItem(REMEMBER_KEY, {});
 
+  /** Closing after a successful order empties the cart once more, so the items cannot be ordered twice by accident. */
+  const close = () => {
+    if (order) clearCart();
+    onClose();
+  };
+
   const {
     register,
     handleSubmit,
@@ -94,7 +100,7 @@ export default function QuickOrderModal({ open, onClose }) {
     setError('');
     setCopied(false);
     const t = setTimeout(() => setStep(STEP.DETAILS), 1400);
-    const onKey = (e) => e.key === 'Escape' && step !== STEP.SENDING && onClose();
+    const onKey = (e) => e.key === 'Escape' && step !== STEP.SENDING && close();
     document.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -152,10 +158,10 @@ export default function QuickOrderModal({ open, onClose }) {
 
   return createPortal(
     <div className="fixed inset-0 z-[110] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label="Order now">
-      <div className="absolute inset-0 bg-navy-950/70 backdrop-blur-sm animate-fade-in" onClick={busy ? undefined : onClose} />
+      <div className="absolute inset-0 bg-navy-950/70 backdrop-blur-sm animate-fade-in" onClick={busy ? undefined : close} />
       <div className="relative w-full max-w-lg overflow-hidden rounded-t-xl3 border bg-surface shadow-float animate-fade-up sm:m-4 sm:rounded-xl3" style={{ borderColor: 'var(--glass-border)' }}>
         {!busy && (
-          <button type="button" onClick={onClose} className="absolute right-3 top-3 z-10 rounded-full p-2 text-muted transition hover:bg-surface-2 hover:text-ink" aria-label="Close">
+          <button type="button" onClick={close} className="absolute right-3 top-3 z-10 rounded-full p-2 text-muted transition hover:bg-surface-2 hover:text-ink" aria-label="Close">
             <X className="h-5 w-5" />
           </button>
         )}
@@ -196,7 +202,7 @@ export default function QuickOrderModal({ open, onClose }) {
             </Button>
             <p className="mt-3 text-center text-xs text-muted">
               Prefer to add a full delivery address now?{' '}
-              <Link to="/order-request" onClick={onClose} className="font-semibold text-brand-600 hover:underline">
+              <Link to="/order-request" onClick={close} className="font-semibold text-brand-600 hover:underline">
                 Use the detailed form
               </Link>
             </p>
@@ -211,7 +217,7 @@ export default function QuickOrderModal({ open, onClose }) {
             <h3 className="mt-4 font-display text-2xl font-bold">Something went wrong</h3>
             <p className="mt-2 text-sm text-muted">{error}</p>
             <div className="mt-6 flex justify-center gap-3">
-              <Button variant="secondary" onClick={onClose}>
+              <Button variant="secondary" onClick={close}>
                 Close
               </Button>
               <Button onClick={() => setStep(STEP.DETAILS)} icon={RefreshCw}>
@@ -248,16 +254,16 @@ export default function QuickOrderModal({ open, onClose }) {
             </ul>
 
             <div className="mt-6 grid gap-3">
-              <a href={whatsappLink(buildWhatsAppMessage(order, settings.storeName), settings.whatsapp)} target="_blank" rel="noopener noreferrer" onClick={onClose} className="btn btn-whatsapp btn-lg w-full">
+              <a href={whatsappLink(buildWhatsAppMessage(order, settings.storeName), settings.whatsapp)} target="_blank" rel="noopener noreferrer" onClick={close} className="btn btn-whatsapp btn-lg w-full">
                 <WhatsAppIcon className="h-5 w-5" /> Send order on WhatsApp
               </a>
-              <Link to="/track-order" onClick={onClose} className="btn btn-secondary btn-md w-full">
+              <Link to="/track-order" onClick={close} className="btn btn-secondary btn-md w-full">
                 Track this order
               </Link>
-              <Link to={`/order-confirmation/${order.trackingToken}`} state={{ order }} onClick={onClose} className="btn btn-secondary btn-md w-full">
+              <Link to={`/order-confirmation/${order.trackingToken}`} state={{ order }} onClick={close} className="btn btn-secondary btn-md w-full">
                 View order details <ArrowRight className="h-4 w-4" />
               </Link>
-              <button type="button" onClick={onClose} className="text-sm font-medium text-muted hover:text-ink">
+              <button type="button" onClick={close} className="text-sm font-medium text-muted hover:text-ink">
                 Continue shopping
               </button>
             </div>

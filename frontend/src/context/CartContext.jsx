@@ -19,11 +19,12 @@ const isUsableItem = (i) => i && i.productId && i.quantity > 0 && (USE_MOCK || O
  * Items saved while the site ran on demo data (or by an older version) cannot be ordered from
  * the real API, so they are dropped when the cart loads instead of failing at checkout.
  */
-const initial = () => {
+const readSaved = () => {
   const saved = getItem(STORAGE_KEY, []);
-  const items = Array.isArray(saved) ? saved.filter(isUsableItem) : [];
-  return { items };
+  return Array.isArray(saved) ? saved.filter(isUsableItem) : [];
 };
+const initial = () => ({ items: readSaved() });
+const sameItems = (a, b) => a.length === b.length && a.every((x, i) => x.productId === b[i].productId && x.quantity === b[i].quantity);
 
 function reducer(state, action) {
   switch (action.type) {
@@ -64,6 +65,8 @@ function reducer(state, action) {
       return { items: [] };
     case 'REMOVE_MANY':
       return { items: state.items.filter((i) => !action.productIds.includes(i.productId)) };
+    case 'REPLACE':
+      return sameItems(state.items, action.items) ? state : { items: action.items };
     default:
       return state;
   }
@@ -78,6 +81,32 @@ export function CartProvider({ children }) {
   useEffect(() => {
     setItem(STORAGE_KEY, state.items);
   }, [state.items]);
+
+  // The saved cart is the truth. Re-read it when another tab changed it, when this page comes
+  // back from the browser's back-forward cache (after WhatsApp, for example) or regains focus,
+  // so an order placed elsewhere is not resurrected by a stale copy in memory.
+  useEffect(() => {
+    const sync = () => dispatch({ type: 'REPLACE', items: readSaved() });
+    const onStorage = (e) => {
+      if (e.key === null || e.key === `dg:${STORAGE_KEY}`) sync();
+    };
+    const onPageShow = (e) => {
+      if (e.persisted) sync();
+    };
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') sync();
+    };
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('pageshow', onPageShow);
+    window.addEventListener('focus', sync);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('pageshow', onPageShow);
+      window.removeEventListener('focus', sync);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, []);
 
   const addItem = useCallback((product, quantity = 1) => {
     if (!product?.inStock) {
