@@ -7,6 +7,7 @@ import { UPLOADS_DIR } from './config/paths.js';
 import publicRoutes from './routes/public/index.js';
 import adminRoutes from './routes/admin/index.js';
 import { apiLimiter } from './middleware/rateLimit.js';
+import * as media from './controllers/mediaController.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 
 export function createApp() {
@@ -43,6 +44,8 @@ export function createApp() {
 
   const api = express.Router();
   api.get('/health', (_req, res) => res.json({ success: true, data: { status: 'ok', uptime: process.uptime(), env: env.nodeEnv } }));
+  // Pictures stored in the database, then anything still on the disk.
+  api.get('/uploads/m/:id/:name', media.serve);
   api.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d', immutable: true, index: false }));
   api.use(apiLimiter);
   api.use('/admin', adminRoutes);

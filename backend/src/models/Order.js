@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { uploadUrls } from './plugins/uploadUrls.js';
 
 export const ORDER_STATUSES = ['new', 'contacted', 'confirmed', 'delivered', 'cancelled'];
 
@@ -61,6 +62,11 @@ orderSchema.set('toJSON', {
     delete ret.staleNotifiedAt;
     delete ret.__v;
     return ret;
+  },
+});
+orderSchema.plugin(uploadUrls, {
+  fix: (ret, fix) => {
+    if (Array.isArray(ret.items)) ret.items.forEach((i) => (i.image = fix(i.image)));
   },
 });
 

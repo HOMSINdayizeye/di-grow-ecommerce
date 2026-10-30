@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { uploadUrls } from './plugins/uploadUrls.js';
 
 const categorySchema = new mongoose.Schema(
   {
@@ -11,6 +12,12 @@ const categorySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+categorySchema.plugin(uploadUrls, {
+  fix: (ret, fix) => {
+    ret.image = fix(ret.image);
+  },
+});
 
 export const Category = mongoose.model('Category', categorySchema);
 export default Category;

@@ -44,6 +44,8 @@ services:
         value: D.I.Grow
       - key: SMTP_USER # Brevo SMTP login (xxxx@smtp-brevo.com) when BREVO_API_KEY is an xsmtpsib- key
         sync: false
+      - key: UPLOAD_STORAGE # "mongo" keeps uploaded pictures in the database (no disk needed); "disk" needs a persistent disk
+        value: mongo
     # Uncomment on a paid plan to keep uploaded images across deploys:
     # disk:
     #   name: uploads

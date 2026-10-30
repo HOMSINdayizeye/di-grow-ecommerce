@@ -78,7 +78,14 @@ The frontend is a static Vite build; the backend is a long-running Node server (
 3. Deploy. On the first start with an empty database the API creates the admin account from `ADMIN_EMAIL` / `ADMIN_PASSWORD` by itself (no seed command needed). The log shows `Mail: ready via …` when email is configured correctly.
 4. Copy the service URL (`https://<name>.onrender.com`) into the Vercel variables above and redeploy the frontend.
 
-Notes: the free plan sleeps after 15 minutes without traffic (the first request then takes up to a minute) and has no persistent disk, so uploaded images are lost on the next deploy or restart; a paid plan with the `disk` block in `render.yaml` keeps them. `UPLOADS_BASE_URL` defaults to the Render URL automatically.
+Notes: the free plan sleeps after 15 minutes without traffic (the first request then takes up to a minute) and has no persistent disk. `UPLOADS_BASE_URL` defaults to the Render URL automatically.
+
+**Pictures live in MongoDB.** Uploaded product images, category images, blog covers and the pictures extracted from PDF catalogues are stored in the `media` collection (`UPLOAD_STORAGE=mongo`, the default) and served from `/api/uploads/m/<id>/<name>`, so they survive deploys on any host. Set `UPLOAD_STORAGE=disk` to write them under `backend/uploads` instead. Pictures uploaded to the disk earlier can be moved into the database once, with the stored URLs rewritten:
+
+```bash
+# on the computer that holds backend/uploads, with MONGODB_URI pointing at the live database
+npm run migrate:uploads --workspace=backend
+```
 
 **Any other host:** set the same variables plus `UPLOADS_BASE_URL` = `https://<api host>/api/uploads`, then run `npm run seed` once (or let the first start create the admin).
 

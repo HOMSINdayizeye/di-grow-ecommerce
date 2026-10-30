@@ -11,7 +11,8 @@
     "build": "node -e \"console.log('Di-Grow API has no build step; nothing to do.')\"",
     "seed": "node --env-file-if-exists=.env src/seed/seed.js",
     "seed:demo": "node --env-file-if-exists=.env src/seed/seed.js --demo",
-    "seed:reset": "node --env-file-if-exists=.env src/seed/seed.js --reset --demo"
+    "seed:reset": "node --env-file-if-exists=.env src/seed/seed.js --reset --demo",
+    "migrate:uploads": "node --env-file-if-exists=.env src/scripts/migrateUploads.js"
   },
   "engines": {
     "node": ">=20.6"

@@ -6,10 +6,9 @@
  * or beside a product photo becomes that product's name, description and, when printed,
  * its price and code. Pages with text but no usable images become one candidate per page.
  *
- * Images are written with sharp to `outDir` and referenced through `publicBase`.
+ * Images are re-encoded with sharp and handed to the `saveImage` callback (disk or Cloudinary).
  */
 import path from 'node:path';
-import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
 import sharp from 'sharp';
@@ -210,8 +209,8 @@ const hasTransparency = (data, channels) => {
   return false;
 };
 
-/** Encode a decoded PDF image to JPG (or PNG when it has transparency). Returns the file name. */
-async function writeImage(img, pixels, outDir, baseName) {
+/** Encode a decoded PDF image to JPG (or PNG when it has transparency). Returns { buffer, ext }. */
+async function encodeImage(img, pixels) {
   const buf = Buffer.from(pixels.data.buffer, pixels.data.byteOffset, pixels.data.byteLength);
   let pipeline = sharp(buf, { raw: { width: img.width, height: img.height, channels: pixels.channels } }).resize({
     width: MAX_IMAGE_PX,
@@ -219,16 +218,10 @@ async function writeImage(img, pixels, outDir, baseName) {
     fit: 'inside',
     withoutEnlargement: true,
   });
-  let file;
   if (hasTransparency(pixels.data, pixels.channels)) {
-    file = `${baseName}.png`;
-    pipeline = pipeline.png({ compressionLevel: 8 });
-  } else {
-    file = `${baseName}.jpg`;
-    pipeline = pipeline.flatten({ background: '#ffffff' }).jpeg({ quality: 85, mozjpeg: true });
+    return { buffer: await pipeline.png({ compressionLevel: 8 }).toBuffer(), ext: '.png' };
   }
-  await pipeline.toFile(path.join(outDir, file));
-  return file;
+  return { buffer: await pipeline.flatten({ background: '#ffffff' }).jpeg({ quality: 85, mozjpeg: true }).toBuffer(), ext: '.jpg' };
 }
 
 /* ----------------------------------------------------------------- parsing */
@@ -323,13 +316,12 @@ function linesToCandidate(lines, page, images) {
 }
 
 /**
- * parseCatalogPdf(buffer, { outDir, publicBase }) -> { pages, items, warnings }
- * `outDir` receives the extracted images; `publicBase` is the URL prefix stored on the items.
+ * parseCatalogPdf(buffer, { saveImage }) -> { pages, items, warnings }
+ * `saveImage({ buffer, filename })` must store the picture and resolve to its public URL.
  */
-export async function parseCatalogPdf(buffer, { outDir, publicBase, maxPages = 200 }) {
+export async function parseCatalogPdf(buffer, { saveImage, maxPages = 200 }) {
   const pdfjs = await loadPdfjs();
   const { ImageKind } = pdfjs;
-  await fs.mkdir(outDir, { recursive: true });
 
   const task = pdfjs.getDocument({
     data: new Uint8Array(buffer),
@@ -350,7 +342,7 @@ export async function parseCatalogPdf(buffer, { outDir, publicBase, maxPages = 2
   const pageCount = Math.min(doc.numPages, maxPages);
   if (doc.numPages > maxPages) warnings.push(`Only the first ${maxPages} of ${doc.numPages} pages were read.`);
 
-  const pages = []; // { number, images: [{ file, bbox, hash }], lines }
+  const pages = []; // { number, images: [{ filename, buffer, bbox, hash }], lines }
   const hashPages = new Map(); // image hash -> Set of page numbers
   let imageSeq = 0;
 
@@ -374,14 +366,14 @@ export async function parseCatalogPdf(buffer, { outDir, publicBase, maxPages = 2
           const hash = crypto.createHash('sha1').update(pixels.data).digest('hex');
           if (!hashPages.has(hash)) hashPages.set(hash, new Set());
           hashPages.get(hash).add(n);
-          let file;
+          let encoded;
           try {
-            file = await writeImage(img, pixels, outDir, `p${n}-${++imageSeq}`);
+            encoded = await encodeImage(img, pixels);
           } catch (err) {
             warnings.push(`Page ${n}: an image could not be converted (${err.message}).`);
             continue;
           }
-          images.push({ file, bbox, hash, area });
+          images.push({ filename: `p${n}-${++imageSeq}${encoded.ext}`, buffer: encoded.buffer, bbox, hash, area });
         }
         lines = buildLines(await page.getTextContent());
       } catch (err) {
@@ -423,7 +415,6 @@ export async function parseCatalogPdf(buffer, { outDir, publicBase, maxPages = 2
   }
 
   const items = [];
-  const usedFiles = new Set();
   for (const page of pages) {
     const images = page.images.filter((i) => !decoration.has(i.hash));
     if (!images.length) {
@@ -448,19 +439,20 @@ export async function parseCatalogPdf(buffer, { outDir, publicBase, maxPages = 2
       });
       if (best >= 0 && bestScore <= maxDistance) buckets[best].push(line);
     }
-    images.forEach((img, idx) => {
-      const url = `${publicBase}/${img.file}`;
-      usedFiles.add(img.file);
+    for (const [idx, img] of images.entries()) {
+      let url;
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        url = await saveImage({ buffer: img.buffer, filename: img.filename });
+      } catch (err) {
+        warnings.push(`Page ${page.number}: a picture could not be stored (${err.message}).`);
+        continue;
+      }
       items.push(linesToCandidate(buckets[idx], page.number, [url]));
-    });
-  }
-
-  // Remove the files we decided not to use (decorations, unused duplicates).
-  for (const page of pages) {
-    for (const img of page.images) {
-      if (!usedFiles.has(img.file)) await fs.rm(path.join(outDir, img.file), { force: true }).catch(() => {});
     }
   }
+  // Decoration images were never stored, so nothing to clean up; drop the buffers now.
+  for (const page of pages) page.images.length = 0;
 
   // Give every candidate a working name so the admin can find it in the list.
   let unnamed = 0;

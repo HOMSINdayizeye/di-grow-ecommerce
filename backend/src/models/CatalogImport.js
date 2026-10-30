@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { uploadUrls, fixList } from './plugins/uploadUrls.js';
 
 export const IMPORT_ITEM_STATUSES = ['pending', 'imported', 'skipped'];
 
@@ -43,6 +44,11 @@ const catalogImportSchema = new mongoose.Schema(
 );
 
 catalogImportSchema.index({ createdAt: -1 });
+catalogImportSchema.plugin(uploadUrls, {
+  fix: (ret, fix) => {
+    if (Array.isArray(ret.items)) ret.items.forEach((i) => (i.images = fixList(i.images, fix)));
+  },
+});
 
 /** Counts the list page shows without loading every item field. */
 catalogImportSchema.methods.summary = function summary() {

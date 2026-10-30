@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { uploadUrls } from './plugins/uploadUrls.js';
 
 const blogPostSchema = new mongoose.Schema(
   {
@@ -24,6 +25,12 @@ blogPostSchema.index({ publishedAt: -1 });
 
 export const estimateReadTime = (html) =>
   Math.max(1, Math.round(String(html || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length / 200));
+
+blogPostSchema.plugin(uploadUrls, {
+  fix: (ret, fix) => {
+    ret.coverImage = fix(ret.coverImage);
+  },
+});
 
 export const BlogPost = mongoose.model('BlogPost', blogPostSchema);
 export default BlogPost;

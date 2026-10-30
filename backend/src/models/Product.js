@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { uploadUrls, fixList } from './plugins/uploadUrls.js';
 
 export const PLACEHOLDER_IMAGE = '/images/placeholder-product.svg';
 
@@ -33,6 +34,12 @@ productSchema.pre('validate', function syncStock(next) {
   this.inStock = (this.stockQty || 0) > 0;
   if (!this.images?.length) this.images = [PLACEHOLDER_IMAGE];
   next();
+});
+
+productSchema.plugin(uploadUrls, {
+  fix: (ret, fix) => {
+    ret.images = fixList(ret.images, fix);
+  },
 });
 
 /** Fields populated from the category so responses match category{_id,name,slug}. */

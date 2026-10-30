@@ -5,12 +5,25 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import toast from 'react-hot-toast';
 import { getItem, setItem } from '@/utils/storage';
+import { USE_MOCK } from '@/services/api';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'cart';
 const MAX_QTY = 50;
 
-const initial = () => ({ items: getItem(STORAGE_KEY, []) });
+/** Real products have MongoDB ids; demo products have ids like "p1". */
+const OBJECT_ID_RE = /^[a-f\d]{24}$/i;
+const isUsableItem = (i) => i && i.productId && i.quantity > 0 && (USE_MOCK || OBJECT_ID_RE.test(String(i.productId)));
+
+/**
+ * Items saved while the site ran on demo data (or by an older version) cannot be ordered from
+ * the real API, so they are dropped when the cart loads instead of failing at checkout.
+ */
+const initial = () => {
+  const saved = getItem(STORAGE_KEY, []);
+  const items = Array.isArray(saved) ? saved.filter(isUsableItem) : [];
+  return { items };
+};
 
 function reducer(state, action) {
   switch (action.type) {
@@ -49,6 +62,8 @@ function reducer(state, action) {
       return { items: state.items.filter((i) => i.productId !== action.productId) };
     case 'CLEAR':
       return { items: [] };
+    case 'REMOVE_MANY':
+      return { items: state.items.filter((i) => !action.productIds.includes(i.productId)) };
     default:
       return state;
   }
@@ -76,6 +91,7 @@ export function CartProvider({ children }) {
   const updateQuantity = useCallback((productId, quantity) => dispatch({ type: 'UPDATE', productId, quantity }), []);
   const removeItem = useCallback((productId) => dispatch({ type: 'REMOVE', productId }), []);
   const clearCart = useCallback(() => dispatch({ type: 'CLEAR' }), []);
+  const removeItems = useCallback((productIds) => dispatch({ type: 'REMOVE_MANY', productIds }), []);
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
   const toggleCart = useCallback(() => setIsOpen((v) => !v), []);
@@ -94,6 +110,7 @@ export function CartProvider({ children }) {
       addItem,
       updateQuantity,
       removeItem,
+      removeItems,
       clearCart,
       isOpen,
       openCart,
@@ -101,7 +118,7 @@ export function CartProvider({ children }) {
       toggleCart,
       lastAdded,
     };
-  }, [state.items, isOpen, lastAdded, addItem, updateQuantity, removeItem, clearCart, openCart, closeCart, toggleCart]);
+  }, [state.items, isOpen, lastAdded, addItem, updateQuantity, removeItem, removeItems, clearCart, openCart, closeCart, toggleCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

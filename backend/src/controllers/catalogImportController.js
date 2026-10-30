@@ -1,15 +1,12 @@
-import path from 'node:path';
-import fs from 'node:fs/promises';
-import { env } from '../config/env.js';
-import { UPLOADS_DIR } from '../config/paths.js';
 import { CatalogImport, Product, Category, AuditLog } from '../models/index.js';
 import { ApiError } from '../lib/ApiError.js';
 import { asyncHandler } from '../lib/asyncHandler.js';
 import { uniqueSlug, slugify } from '../lib/utils.js';
 import { parseCatalogPdf } from '../lib/catalogParser.js';
+import { saveImage, deleteFolder } from '../lib/storage.js';
 import { logger } from '../lib/logger.js';
 
-const importDir = (id) => path.join(UPLOADS_DIR, 'catalog', String(id));
+const importFolder = (id) => `catalog/${id}`;
 
 /** Upload a PDF, read it and store the candidates for review. */
 export const create = asyncHandler(async (req, res) => {
@@ -20,18 +17,20 @@ export const create = asyncHandler(async (req, res) => {
     createdBy: req.user._id,
     createdByName: req.user.name,
   });
-  const outDir = importDir(doc._id);
+  const folder = importFolder(doc._id);
   const started = Date.now();
   let parsed;
   try {
-    parsed = await parseCatalogPdf(req.file.buffer, { outDir, publicBase: `${env.uploadsBaseUrl}/catalog/${doc._id}` });
+    parsed = await parseCatalogPdf(req.file.buffer, {
+      saveImage: ({ buffer, filename }) => saveImage({ buffer, folder, filename }),
+    });
   } catch (err) {
-    await fs.rm(outDir, { recursive: true, force: true }).catch(() => {});
+    await deleteFolder(folder);
     logger.warn('Catalogue PDF could not be parsed', err.message);
     throw ApiError.badRequest(`Could not read that PDF (${err.message}). Make sure it is a real PDF and not password protected.`);
   }
   if (!parsed.items.length) {
-    await fs.rm(outDir, { recursive: true, force: true }).catch(() => {});
+    await deleteFolder(folder);
     throw ApiError.badRequest('No products were found in that PDF. Scanned catalogues without selectable text or embedded pictures cannot be read.');
   }
   doc.pages = parsed.pages;
@@ -170,7 +169,7 @@ export const remove = asyncHandler(async (req, res) => {
   const keepImages = doc.items.some((i) => i.status === 'imported');
   await doc.deleteOne();
   // Imported products still point at these pictures, so only clean up when nothing was imported.
-  if (!keepImages) await fs.rm(importDir(doc._id), { recursive: true, force: true }).catch(() => {});
+  if (!keepImages) await deleteFolder(importFolder(doc._id));
   AuditLog.record(req.user, 'catalog.delete', doc.fileName);
   res.json({ success: true, data: { _id: doc._id } });
 });

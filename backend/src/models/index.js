@@ -8,3 +8,4 @@ export { Settings, PUBLIC_SETTINGS_FIELDS } from './Settings.js';
 export { Notification, NOTIFICATION_TYPES } from './Notification.js';
 export { AuditLog } from './AuditLog.js';
 export { CatalogImport, IMPORT_ITEM_STATUSES } from './CatalogImport.js';
+export { Media } from './Media.js';
