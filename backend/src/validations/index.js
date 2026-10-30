@@ -27,13 +27,16 @@ export const loginSchema = z.object({
 
 export const forgotPasswordSchema = z.object({ email: z.string().trim().email('Enter a valid email') });
 
-export const resetPasswordSchema = z.object({
+export const verifyResetCodeSchema = z.object({
   email: z.string().trim().email('Enter a valid email'),
   code: z
     .string()
     .trim()
     .transform((v) => v.replace(/\s+/g, ''))
     .refine((v) => /^\d{5}$/.test(v), 'Enter the 5-digit code from the email'),
+});
+
+export const resetPasswordSchema = verifyResetCodeSchema.extend({
   password: z.string().min(8, 'Use at least 8 characters').max(128),
 });
 

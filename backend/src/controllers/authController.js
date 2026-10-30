@@ -58,9 +58,11 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   return res.json(reply);
 });
 
-/** Check the emailed code for that email and set the new password. Five wrong codes invalidate it. */
-export const resetPassword = asyncHandler(async (req, res) => {
-  const { email, code, password } = req.body;
+/**
+ * Load the user whose current reset code matches. A wrong code counts as an attempt and the
+ * fifth wrong one discards the code, so the 100 000 possibilities cannot be brute-forced.
+ */
+async function userForResetCode(email, code) {
   const invalid = () => ApiError.badRequest('That code is wrong or has expired. Request a new one.');
   const user = await User.findOne({ email: email.toLowerCase(), isActive: true }).select('+resetTokenHash +resetTokenExpires +resetAttempts +passwordHash');
   if (!user || !user.resetTokenHash || !user.resetTokenExpires || user.resetTokenExpires < new Date()) throw invalid();
@@ -77,6 +79,20 @@ export const resetPassword = asyncHandler(async (req, res) => {
     await user.save();
     throw invalid();
   }
+  return user;
+}
+
+/** Step 1 on the reset page: confirm the code is right before the password fields are shown. The code stays valid. */
+export const verifyResetCode = asyncHandler(async (req, res) => {
+  const { email, code } = req.body;
+  await userForResetCode(email, code);
+  res.json({ success: true, data: { message: 'Code verified. Choose a new password.' } });
+});
+
+/** Step 2: the same code plus the new password. The code is consumed here. */
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { email, code, password } = req.body;
+  const user = await userForResetCode(email, code);
 
   await user.setPassword(password);
   user.resetTokenHash = undefined;

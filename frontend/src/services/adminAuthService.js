@@ -38,6 +38,12 @@ export const adminAuthService = {
     return api.post('/admin/auth/forgot-password', { email });
   },
 
+  /** Check the emailed 5-digit code before showing the password fields. The code stays valid. */
+  async verifyResetCode({ email, code }) {
+    if (USE_MOCK) return (await getMock()).verifyResetCode({ email, code });
+    return api.post('/admin/auth/verify-reset-code', { email, code });
+  },
+
   /** Set a new password with the 5-digit code that was emailed to that address. */
   async resetPassword({ email, code, password }) {
     if (USE_MOCK) return (await getMock()).resetPassword({ email, code, password });

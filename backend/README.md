@@ -84,7 +84,8 @@ All paths are under `/api`. Admin routes need `Authorization: Bearer <token>`.
 | GET | `/admin/auth/me` | Current user |
 | POST | `/admin/auth/logout` | Stateless; the client drops the token |
 | POST | `/admin/auth/forgot-password` | `{ email }`. Emails a 5-digit code, valid for 10 minutes; the reply is the same whether or not the account exists |
-| POST | `/admin/auth/reset-password` | `{ email, code, password }`. Five wrong codes invalidate the code; request a new one |
+| POST | `/admin/auth/verify-reset-code` | `{ email, code }`. Step 1 on the reset page: checks the code without consuming it |
+| POST | `/admin/auth/reset-password` | `{ email, code, password }`. Step 2: consumes the code. Five wrong codes (either step) invalidate it |
 | POST | `/admin/auth/change-password` | `{ currentPassword, newPassword }` |
 | GET/POST | `/admin/staff` | admin only |
 | PUT/DELETE | `/admin/staff/:id` | admin only. `PUT` accepts `name, email, role, isActive, password` |

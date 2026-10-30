@@ -256,6 +256,11 @@ export const mockApi = {
     return { data: { message: 'If that email exists, a 5-digit code has been sent to it.' } };
   },
 
+  async verifyResetCode() {
+    await delay(500);
+    return { data: { message: 'Code verified. Choose a new password.' } };
+  },
+
   async resetPassword() {
     await delay(600);
     return { data: { message: 'Password updated. You can now sign in.' } };

@@ -11,13 +11,18 @@ export const forgotPasswordSchema = z.object({
   email: z.string().trim().email('Enter a valid email'),
 });
 
+/** Step 1 of the reset page: the emailed code. */
+export const verifyResetCodeSchema = z.object({
+  email: z.string().trim().email('Enter a valid email'),
+  code: z
+    .string()
+    .transform((v) => v.replace(/\s+/g, ''))
+    .refine((v) => /^\d{5}$/.test(v), 'Enter the 5-digit code from the email'),
+});
+
+/** Step 2 of the reset page: the new password, shown only after the code was verified. */
 export const resetPasswordSchema = z
   .object({
-    email: z.string().trim().email('Enter a valid email'),
-    code: z
-      .string()
-      .transform((v) => v.replace(/\s+/g, ''))
-      .refine((v) => /^\d{5}$/.test(v), 'Enter the 5-digit code from the email'),
     password: z.string().min(8, 'Use at least 8 characters'),
     confirmPassword: z.string(),
   })
