@@ -15,11 +15,20 @@ export function createApp() {
   app.disable('x-powered-by');
 
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+  // CORS_ORIGINS entries may contain "*" (e.g. https://my-site*.vercel.app) to cover preview deployments.
+  const originMatchers = env.corsOrigins.map((o) => {
+    const clean = o.replace(/\/+$/, '').toLowerCase();
+    if (!clean.includes('*')) return (origin) => origin.toLowerCase() === clean;
+    const rx = new RegExp(`^${clean.split('*').map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[a-z0-9-]*')}$`, 'i');
+    return (origin) => rx.test(origin);
+  });
+  const originAllowed = (origin) => originMatchers.some((match) => match(origin));
+
   app.use(
     cors({
       origin(origin, cb) {
         // Requests without an Origin header (curl, server to server) are fine.
-        if (!origin || env.corsOrigins.includes(origin)) return cb(null, true);
+        if (!origin || originAllowed(origin)) return cb(null, true);
         // In development accept any localhost port, since Vite picks a free one (5173, 5174, ...).
         if (!env.isProd && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return cb(null, true);
         // Unknown origin: answer without CORS headers so the browser blocks it, instead of a 500.
